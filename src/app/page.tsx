@@ -42,7 +42,7 @@ export default async function Home() {
                             GitHub
                         </a>
                         <a
-                            href="https://instagram.com/artemkdr"
+                            href="https://instagram.com/artem.kdr"
                             target="_blank"
                             title="Artem Kudryavtsev's Instagram"
                         >

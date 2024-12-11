@@ -4,7 +4,7 @@ import { Photo } from '@/app/lib/definitions';
 import { PhotosContext } from '@/app/lib/providers/photos-provider';
 import FullImage from '@/app/ui/full-image';
 import Modal from '@/app/ui/modal';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import {
     MouseEvent as ReactMouseEvent,

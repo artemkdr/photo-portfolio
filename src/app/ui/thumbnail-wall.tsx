@@ -2,7 +2,7 @@
 
 import { Photo } from '@/app/lib/definitions';
 import { PhotosContext } from '@/app/lib/providers/photos-provider';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useContext, useEffect, useState } from 'react';
