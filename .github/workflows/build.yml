@@ -1,0 +1,11 @@
+name: "Build"
+
+on: 
+  workflow_dispatch:
+  workflow_call:
+
+jobs:  
+  build-react:
+    uses: ./.github/workflows/build-react.yml
+    with:
+      working-directory: '.'
