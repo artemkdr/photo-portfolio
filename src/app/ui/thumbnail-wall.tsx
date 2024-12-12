@@ -117,14 +117,15 @@ export const ThumbnailWall = () => {
 
         const deviceOrientationHandler = (e: DeviceOrientationEvent) => {
             if (moveProcessing) return;
-            const leftRightAngle = e.gamma;
-            const forwardBackwardAngle = e.beta;
+            const isPortrait = screen.orientation?.type?.includes('portait');
+            const leftRightAngle = isPortrait ? e.gamma : e.beta;
+            const forwardBackwardAngle = isPortrait ? e.beta : e.gamma;
             if (leftRightAngle != null && forwardBackwardAngle != null) {
                 if (isIntroCompleted && pathname === '/') {
                     const rect = getContainerRect();
                     processItems(
-                        ((-leftRightAngle + 90) * rect.width) / 180,
-                        ((-forwardBackwardAngle + 180) * rect.height) / 360
+                        ((-leftRightAngle + 45) * rect.width) / 90,
+                        ((-forwardBackwardAngle + 90) * rect.height) / 180
                     );
                 }
             }
