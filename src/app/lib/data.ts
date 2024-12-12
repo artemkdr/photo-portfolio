@@ -9,23 +9,24 @@ export async function fetchPhotos() {
     const photosPath = path.join(process.cwd(), publicDir, photosDir);
     const filenames = fs.readdirSync(photosPath);
     const extensions = ['.jpg', '.webp', '.jpeg', '.png', 'bmp'];
-    const photos = filenames.map((filename) => {
-        if (
-            extensions.indexOf(path.extname(filename)?.toLocaleLowerCase()) ==
-            -1
+    const photos = filenames
+        .filter(
+            (filename) =>
+                extensions.indexOf(
+                    path.extname(filename)?.toLocaleLowerCase()
+                ) >= 0
         )
-            return;
-        const filePath = path.join(photosPath, filename);
-        const stats = fs.statSync(filePath); // Get file stats
-        return {
-            src: `/${photosDir}/${encodeURIComponent(filename)}`,
-            url: `/photo/${encodeURIComponent(filename)}`,
-            name: encodeURIComponent(filename),
-            alt: filename,
-            created: stats.ctime,
-        };
-    });
+        .map((filename) => {
+            const filePath = path.join(photosPath, filename);
+            const stats = fs.statSync(filePath); // Get file stats
+            return {
+                src: `/${photosDir}/${encodeURIComponent(filename)}`,
+                url: `/photo/${encodeURIComponent(filename)}`,
+                name: encodeURIComponent(filename),
+                alt: filename,
+                created: stats.ctime,
+            };
+        });
     photos.sort((a, b) => a.created.getTime() - b.created.getTime());
-
     return photos;
 }
