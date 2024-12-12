@@ -1,4 +1,5 @@
 import { fetchPhotos } from '@/app/lib/data';
+import DirectionProvider from '@/app/lib/providers/direction-provider';
 import PhotosProvider from '@/app/lib/providers/photos-provider';
 import type { Metadata } from 'next';
 import { Roboto_Condensed } from 'next/font/google';
@@ -28,8 +29,10 @@ export default async function RootLayout({
         <html lang="en">
             <body className={`${robotoCondensed.className} antialiased`}>
                 <PhotosProvider value={photos}>
-                    {children}
-                    {modal}
+                    <DirectionProvider>
+                        {children}
+                        {modal}
+                    </DirectionProvider>
                 </PhotosProvider>
             </body>
         </html>

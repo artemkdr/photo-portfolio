@@ -1,11 +1,11 @@
-name: "Build"
+name: 'Build'
 
-on: 
-  workflow_dispatch:
-  workflow_call:
+on:
+    workflow_dispatch:
+    workflow_call:
 
-jobs:  
-  build-nextjs:
-    uses: ./.github/workflows/build-nextjs.yml
-    with:
-      working-directory: '.'
+jobs:
+    build-nextjs:
+        uses: ./.github/workflows/build-nextjs.yml
+        with:
+            working-directory: '.'

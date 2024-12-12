@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import {
+import React, {
     MouseEvent,
     MouseEventHandler,
     TouchEvent,
@@ -13,9 +13,11 @@ import {
 
 export default function Modal({
     children,
+    footer,
     onTap = null,
 }: {
     children: React.ReactNode;
+    footer: React.ReactNode;
     onTap?: ((e: MouseEvent | TouchEvent) => void) | null;
 }) {
     const overlay = useRef(null);
@@ -39,7 +41,7 @@ export default function Modal({
                 onTap(e);
             }
         },
-        [onDismiss]
+        [onDismiss, onTap]
     );
 
     const onTouch: TouchEventHandler = useCallback(
@@ -50,7 +52,7 @@ export default function Modal({
                 onTap(e);
             }
         },
-        [onDismiss]
+        [onDismiss, onTap]
     );
 
     const onKeyDown = useCallback(
@@ -80,10 +82,11 @@ export default function Modal({
 
             <div
                 ref={wrapper}
-                className="w-[100%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sm:w-10/12 md:w-8/12 lg:w-2/5 p-4"
+                className="w-auto h-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 lg:p-12 p-4"
             >
                 {children}
             </div>
+            {footer}
         </div>
     );
 }
