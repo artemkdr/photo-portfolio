@@ -112,16 +112,15 @@ export const ThumbnailWall = () => {
             processItems(e.touches[0].clientX, e.touches[0].clientY);
         };
 
-        const touchEndEventHandler = (e: TouchEvent) => {
-            processItems(e.touches[0].clientX, e.touches[0].clientY);
+        const touchEndEventHandler = () => {
             moveProcessing = false;
         };
 
         const deviceOrientationHandler = (e: DeviceOrientationEvent) => {
             if (moveProcessing) return;
-            const isLandscape = screen.orientation?.type?.includes('landscape');
-            const leftRightAngle = isLandscape ? e.beta : e.gamma;
-            const forwardBackwardAngle = isLandscape ? e.gamma : e.beta;
+            //const isLandscape = screen.orientation?.type?.includes('landscape');
+            const leftRightAngle = e.gamma;
+            const forwardBackwardAngle = e.beta;
             if (leftRightAngle != null && forwardBackwardAngle != null) {
                 if (isIntroCompleted && pathname === '/') {
                     const rect = getContainerRect();
