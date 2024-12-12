@@ -123,8 +123,8 @@ export const ThumbnailWall = () => {
                 if (isIntroCompleted && pathname === '/') {
                     const rect = getContainerRect();
                     processItems(
-                        ((-leftRightAngle + 90) * rect.width) / 90,
-                        ((-forwardBackwardAngle + 180) * rect.height) / 180
+                        ((-leftRightAngle + 90) * rect.width) / 180,
+                        ((-forwardBackwardAngle + 180) * rect.height) / 360
                     );
                 }
             }
