@@ -14,18 +14,18 @@
         "test:watch": "vitest watch"
     },
     "dependencies": {
-        "motion": "^11.13.5",
-        "next": "15.0.4",
+        "motion": "^11.14.1",
+        "next": "15.1.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
     },
     "devDependencies": {
         "@testing-library/react": "^16.1.0",
         "@vitejs/plugin-react": "^4.3.4",
-        "@types/node": "^20",
+        "@types/node": "^22",
         "@types/react": "^19",
         "@types/react-dom": "^19",
-        "eslint": "^8",
+        "eslint": "^9",
         "eslint-config-next": "15.0.4",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-prettier": "^5.2.1",

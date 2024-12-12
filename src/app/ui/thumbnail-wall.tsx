@@ -107,8 +107,8 @@ export const ThumbnailWall = () => {
             if (leftRightAngle != null && forwardBackwardAngle != null) {
                 if (isIntroCompleted && pathname === '/') {
                     processItems(
-                        (leftRightAngle + 90) * 2,
-                        (forwardBackwardAngle + 180) * 3
+                        (-leftRightAngle + 90) * 2,
+                        (-forwardBackwardAngle + 180) * 3
                     );
                 }
             }
