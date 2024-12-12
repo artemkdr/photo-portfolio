@@ -9,7 +9,9 @@
         "lint": "next lint",
         "lint:fix": "eslint . --fix",
         "format": "prettier --write .",
-        "prepare": "husky .husky"
+        "prepare": "husky .husky",
+        "test": "vitest run",
+        "test:watch": "vitest watch"
     },
     "dependencies": {
         "motion": "^11.13.5",
@@ -18,6 +20,8 @@
         "react-dom": "^19.0.0"
     },
     "devDependencies": {
+        "@testing-library/react": "^16.1.0",
+        "@vitejs/plugin-react": "^4.3.4",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",
@@ -26,10 +30,13 @@
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-prettier": "^5.2.1",
         "husky": "^9.1.7",
+        "jsdom": "^25.0.1",
         "postcss": "^8",
         "prettier": "^3.3.3",
         "prettier-plugin-organize-imports": "^4.1.0",
         "tailwindcss": "^3.4.1",
-        "typescript": "^5"
+        "typescript": "^5",
+        "vite-tsconfig-paths": "^5.1.4",
+        "vitest": "^2.1.8"
     }
 }
