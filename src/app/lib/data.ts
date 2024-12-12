@@ -8,7 +8,13 @@ export async function fetchPhotos() {
     const publicDir = 'public';
     const photosPath = path.join(process.cwd(), publicDir, photosDir);
     const filenames = fs.readdirSync(photosPath);
+    const extensions = ['.jpg', '.webp', '.jpeg', '.png', 'bmp'];
     const photos = filenames.map((filename) => {
+        if (
+            extensions.indexOf(path.extname(filename)?.toLocaleLowerCase()) ==
+            -1
+        )
+            return;
         const filePath = path.join(photosPath, filename);
         const stats = fs.statSync(filePath); // Get file stats
         return {
