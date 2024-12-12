@@ -31,57 +31,61 @@ export const ThumbnailWall = () => {
         const minScale = 0.9;
         const angleMultiplier = 2;
 
-        const processItems = (pointX: number, pointY: number) => {
+        const getContainerRect = () => {
             const container = document.querySelector(
                 '#' + containerId
             ) as HTMLElement;
-            if (container == null) {
-                return;
-            }
-            const gridRect = container.getBoundingClientRect() ?? {
+            const gridRect = container?.getBoundingClientRect() ?? {
                 left: 0,
                 top: 0,
                 width: 1,
                 height: 1,
             };
-            const maxDistance = gridRect.width;
+            return {
+                width: gridRect.width,
+                height: gridRect.height,
+            };
+        };
 
-            const items = container.querySelectorAll('.item');
+        const processItems = (pointX: number, pointY: number) => {
+            const maxDistance = getContainerRect().width;
+            document
+                .querySelectorAll(`#${containerId} .item`)
+                ?.forEach((item) => {
+                    const itemRect = item.getBoundingClientRect();
+                    const itemCenterX = itemRect.left + itemRect.width / 2;
+                    const itemCenterY = itemRect.top + itemRect.height / 2;
 
-            items?.forEach((item) => {
-                const itemRect = item.getBoundingClientRect();
-                const itemCenterX = itemRect.left + itemRect.width / 2;
-                const itemCenterY = itemRect.top + itemRect.height / 2;
+                    const distanceX = itemCenterX - pointX;
+                    const distanceY = itemCenterY - pointY;
+                    const distance = Math.sqrt(distanceX ** 2 + distanceY ** 2);
+                    const scaleFactor = Math.max(
+                        0,
+                        1 - (scaleMultiplier * distance) / maxDistance
+                    );
+                    const scale =
+                        minScale + (maxScale - minScale) * scaleFactor;
 
-                const distanceX = itemCenterX - pointX;
-                const distanceY = itemCenterY - pointY;
-                const distance = Math.sqrt(distanceX ** 2 + distanceY ** 2);
-                const scaleFactor = Math.max(
-                    0,
-                    1 - (scaleMultiplier * distance) / maxDistance
-                );
-                const scale = minScale + (maxScale - minScale) * scaleFactor;
+                    const distanceFactor =
+                        Math.max(0, 1 - (distance / maxDistance) ** 2) *
+                        distanceMultiplier;
 
-                const distanceFactor =
-                    Math.max(0, 1 - (distance / maxDistance) ** 2) *
-                    distanceMultiplier;
+                    const rotateYAngle =
+                        (angleMultiplier * distanceX) / maxDistance;
+                    const rotateXAngle =
+                        (-angleMultiplier * distanceY) / maxDistance;
 
-                const rotateYAngle =
-                    (angleMultiplier * distanceX) / maxDistance;
-                const rotateXAngle =
-                    (-angleMultiplier * distanceY) / maxDistance;
-
-                const img = item.parentElement;
-                if (img != null) {
-                    img.style.transition = 'transform 0.5s ease-out';
-                    img.style.transform = `scale(${scale}) \
+                    const img = item.parentElement;
+                    if (img != null) {
+                        img.style.transition = 'transform 0.5s ease-out';
+                        img.style.transform = `scale(${scale}) \
                         translate(${distanceX * distanceFactor}px, ${distanceY * distanceFactor}px) \
                         rotateX(${rotateXAngle}deg) rotateY(${rotateYAngle}deg)`;
-                    img.style.zIndex = Math.round(
-                        maxDistance - distance
-                    ).toString();
-                }
-            });
+                        img.style.zIndex = Math.round(
+                            maxDistance - distance
+                        ).toString();
+                    }
+                });
         };
 
         const moveEventHandler = (e: MouseEvent | TouchEvent) => {
@@ -101,14 +105,26 @@ export const ThumbnailWall = () => {
             }
         };
 
-        const orientationHandler = (e: DeviceOrientationEvent) => {
+        let moveProcessing = false;
+
+        const touchStartEventHandler = () => {
+            moveProcessing = true;
+        };
+
+        const touchEndEventHandler = () => {
+            moveProcessing = false;
+        };
+
+        const deviceOrientationHandler = (e: DeviceOrientationEvent) => {
+            if (moveProcessing) return;
             const leftRightAngle = e.gamma;
             const forwardBackwardAngle = e.beta;
             if (leftRightAngle != null && forwardBackwardAngle != null) {
                 if (isIntroCompleted && pathname === '/') {
+                    const rect = getContainerRect();
                     processItems(
-                        (-leftRightAngle + 90) * 2,
-                        (-forwardBackwardAngle + 180) * 3
+                        ((-leftRightAngle + 90) * rect.width) / 90,
+                        ((-forwardBackwardAngle + 180) * rect.height) / 180
                     );
                 }
             }
@@ -116,11 +132,18 @@ export const ThumbnailWall = () => {
 
         window.addEventListener('mousemove', moveEventHandler);
         window.addEventListener('touchmove', moveEventHandler);
-        window.addEventListener('deviceorientation', orientationHandler);
+        window.addEventListener('touchstart', touchStartEventHandler);
+        window.addEventListener('touchend', touchEndEventHandler);
+        window.addEventListener('deviceorientation', deviceOrientationHandler);
         return () => {
             window.removeEventListener('mousemove', moveEventHandler);
             window.removeEventListener('touchmove', moveEventHandler);
-            window.removeEventListener('deviceorientation', orientationHandler);
+            window.removeEventListener(
+                'deviceorientation',
+                deviceOrientationHandler
+            );
+            window.removeEventListener('touchstart', touchStartEventHandler);
+            window.removeEventListener('touchend', touchEndEventHandler);
         };
     }, [isIntroCompleted, pathname, containerId]);
 
