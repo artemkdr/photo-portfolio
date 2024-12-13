@@ -24,9 +24,12 @@ a {
     text-decoration: underline;
 }
 
-.close-button {
-    width: 40px;
-    height: 40px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width='40px' height='40px' viewbox='0 0 40 40'%3E%3Cpath d='M 10,10 L 30,30 M 30,10 L 10,30' stroke='gray' stroke-width='4' stroke-linecap='butt' /%3E%3C/svg%3E");
+.close-svg {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width='40px' height='40px' viewbox='0 0 40 40'%3E%3Cpath d='M 0,0 L 40,40 M 40,0 L 0,40' stroke='gray' stroke-width='2' stroke-linecap='butt' /%3E%3C/svg%3E");
+    background-size: 100%;
+}
+
+.arrow-svg {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width='40px' height='40px' viewbox='0 0 40 40'%3E%3Cpath d='M 0,20 L 40,20 M 20,0 L 40,20 M 20,40 L 40,20' stroke='gray' stroke-width='2' stroke-linecap='butt' /%3E%3C/svg%3E");
     background-size: 100%;
 }

@@ -31,11 +31,7 @@ export default function Modal({
 
     const onClick: MouseEventHandler = useCallback(
         (e) => {
-            if (
-                e.target === overlay.current ||
-                e.target === wrapper.current ||
-                e.target === closeButton.current
-            ) {
+            if (e.target === closeButton.current) {
                 onDismiss();
             } else if (onTap != null) {
                 onTap(e);
@@ -77,7 +73,10 @@ export default function Modal({
             <button
                 ref={closeButton}
                 onClick={() => onDismiss()}
-                className="close-button absolute top-0 right-0 z-10"
+                className="close-svg absolute top-0 right-0 z-10 w-14 h-14 bg-center bg-no-repeat"
+                style={{
+                    backgroundSize: '60%',
+                }}
             />
 
             <div

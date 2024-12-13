@@ -1,3 +1,5 @@
-import { test } from 'vitest';
+import { expect, test } from 'vitest';
 
-test('layout', () => {});
+test('test setup works', () => {
+    expect(2 + 3).toBe(5);
+});

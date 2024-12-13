@@ -5,49 +5,49 @@ import { motion } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 
 export const ThumbnailWall = () => {
     const photos = useContext(PhotosContext);
 
-    const [isSSR, setIsSSR] = useState(true);
+    // a state variable to check if the component is rendered on the client side
+    const [isCSR, setIsSCR] = useState(false);
     const [isIntroCompleted, setIsIntroCompleted] = useState(false);
+    const [touchMoveEnabled, setTouchMoveEnabled] = useState(false);
     const pathname = usePathname();
     const tileWidth = 50;
     const tileHeight = 50;
+    const distanceMultiplier = 0.1;
+    const scaleMultiplier = 4;
+    const maxScale = 1.5;
+    const minScale = 0.9;
+    const angleMultiplier = 2;
 
     const [containerId] = useState(
         `wall-${new Date().getTime()}-${Math.round(Math.random() * 1000)}`
     );
 
     useEffect(() => {
-        setIsSSR(false);
+        setIsSCR(true);
     }, []);
 
-    useEffect(() => {
-        const distanceMultiplier = 0.1;
-        const scaleMultiplier = 4;
-        const maxScale = 1.5;
-        const minScale = 0.9;
-        const angleMultiplier = 2;
-
-        const getContainerRect = () => {
-            const container = document.querySelector(
-                '#' + containerId
-            ) as HTMLElement;
-            const gridRect = container?.getBoundingClientRect() ?? {
-                left: 0,
-                top: 0,
-                width: 1,
-                height: 1,
-            };
-            return {
-                width: gridRect.width,
-                height: gridRect.height,
-            };
+    const getContainerRect = useCallback(() => {
+        const container = document.querySelector(
+            '#' + containerId
+        ) as HTMLElement;
+        const gridRect = container?.getBoundingClientRect() ?? {
+            left: 0,
+            top: 0,
+            width: 1,
+            height: 1,
         };
-
-        const processItems = (pointX: number, pointY: number) => {
+        return {
+            width: gridRect.width,
+            height: gridRect.height,
+        };
+    }, [containerId]);
+    const processItems = useCallback(
+        (pointX: number, pointY: number) => {
             const maxDistance = getContainerRect().width;
             document
                 .querySelectorAll(`#${containerId} .item`)
@@ -79,16 +79,27 @@ export const ThumbnailWall = () => {
                     if (img != null) {
                         img.style.transition = 'transform 0.5s ease-out';
                         img.style.transform = `scale(${scale}) \
-                        translate(${distanceX * distanceFactor}px, ${distanceY * distanceFactor}px) \
-                        rotateX(${rotateXAngle}deg) rotateY(${rotateYAngle}deg)`;
+                    translate(${distanceX * distanceFactor}px, ${distanceY * distanceFactor}px) \
+                    rotateX(${rotateXAngle}deg) rotateY(${rotateYAngle}deg)`;
                         img.style.zIndex = Math.round(
                             maxDistance - distance
                         ).toString();
                     }
                 });
-        };
+        },
+        [
+            containerId,
+            getContainerRect,
+            scaleMultiplier,
+            distanceMultiplier,
+            angleMultiplier,
+            minScale,
+            maxScale,
+        ]
+    );
 
-        const moveEventHandler = (e: MouseEvent | TouchEvent) => {
+    const moveEventHandler = useCallback(
+        (e: MouseEvent | TouchEvent) => {
             if (isIntroCompleted && pathname === '/') {
                 processItems(
                     e instanceof MouseEvent
@@ -103,21 +114,25 @@ export const ThumbnailWall = () => {
                           : 0
                 );
             }
-        };
+        },
+        [processItems, isIntroCompleted, pathname]
+    );
 
-        let moveProcessing = false;
-
-        const touchStartEventHandler = (e: TouchEvent) => {
-            moveProcessing = true;
+    const onTouchStart = useCallback(
+        (e: TouchEvent) => {
+            setTouchMoveEnabled(true);
             processItems(e.touches[0].clientX, e.touches[0].clientY);
-        };
+        },
+        [processItems, setTouchMoveEnabled]
+    );
 
-        const touchEndEventHandler = () => {
-            moveProcessing = false;
-        };
+    const onTouchEnd = useCallback(() => {
+        setTouchMoveEnabled(false);
+    }, [setTouchMoveEnabled]);
 
-        const deviceOrientationHandler = (e: DeviceOrientationEvent) => {
-            if (moveProcessing) return;
+    const onDeviceOrientation = useCallback(
+        (e: DeviceOrientationEvent) => {
+            if (touchMoveEnabled) return;
             const isLandscape = screen.orientation?.type?.includes('landscape');
             const leftRightAngle = isLandscape ? e.beta : e.gamma;
             const forwardBackwardAngle = isLandscape ? e.gamma : e.beta;
@@ -130,26 +145,35 @@ export const ThumbnailWall = () => {
                     );
                 }
             }
-        };
+        },
+        [
+            isIntroCompleted,
+            pathname,
+            getContainerRect,
+            processItems,
+            touchMoveEnabled,
+        ]
+    );
 
+    useEffect(() => {
         window.addEventListener('mousemove', moveEventHandler);
         window.addEventListener('touchmove', moveEventHandler);
-        window.addEventListener('touchstart', touchStartEventHandler);
-        window.addEventListener('touchend', touchEndEventHandler);
-        window.addEventListener('deviceorientation', deviceOrientationHandler);
+        window.addEventListener('touchstart', onTouchStart);
+        window.addEventListener('touchend', onTouchEnd);
+        window.addEventListener('deviceorientation', onDeviceOrientation);
         return () => {
             window.removeEventListener('mousemove', moveEventHandler);
             window.removeEventListener('touchmove', moveEventHandler);
             window.removeEventListener(
                 'deviceorientation',
-                deviceOrientationHandler
+                onDeviceOrientation
             );
-            window.removeEventListener('touchstart', touchStartEventHandler);
-            window.removeEventListener('touchend', touchEndEventHandler);
+            window.removeEventListener('touchstart', onTouchStart);
+            window.removeEventListener('touchend', onTouchEnd);
         };
-    }, [isIntroCompleted, pathname, containerId]);
+    });
 
-    return isSSR ? (
+    return !isCSR ? (
         <div className="flex justify-center items-center text-center min-h-20">
             loading...
         </div>

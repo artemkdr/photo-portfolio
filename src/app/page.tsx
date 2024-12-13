@@ -16,7 +16,8 @@ export default async function Home() {
                     <br />
                     These photos were taken with digital cameras (Sony a6000,
                     Sony A7III), mobile phone camera (Google Pixel), action
-                    camera (GoPro 10) and a film camera (Olympus XA).
+                    camera (GoPro 10), film camera (Olympus XA) and a drone (DJI
+                    Spark).
                     <br />
                     Don&apos;t hesitate to{' '}
                     <a href="mailto:artem.kdr@gmail.com">contact me</a> for any

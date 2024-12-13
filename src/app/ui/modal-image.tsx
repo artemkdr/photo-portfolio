@@ -5,6 +5,7 @@ import { DirectionContext } from '@/app/lib/providers/direction-provider';
 import { PhotosContext } from '@/app/lib/providers/photos-provider';
 import FullImage from '@/app/ui/components/full-image';
 import Modal from '@/app/ui/components/modal';
+import { getAbsolutePosition } from '@/app/ui/utils/position';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import {
@@ -13,42 +14,48 @@ import {
     useCallback,
     useContext,
     useEffect,
+    useRef,
+    useState,
 } from 'react';
 
 export default function ModalImage({ id }: { id: string }) {
     const router = useRouter();
-    const photos = useContext(PhotosContext);
-    const photo = photos.find((p) => p.name === id) as Photo;
+    const images = useContext(PhotosContext);
+    const image = images.find((p) => p.name === id) as Photo;
     const [direction, setDirection] = useContext(DirectionContext);
+    const [showArrow, setShowArrow] = useState(false);
+    const arrow = useRef<HTMLDivElement>(null);
 
-    const onNext = useCallback(() => {
-        const index = photos.findIndex((p) => p.name === id);
-        if (index < photos.length - 1) {
+    const nextImage = useCallback(() => {
+        const index = images.findIndex((p) => p.name === id);
+        if (index < images.length - 1) {
             setDirection(1);
-            router.push(photos[index + 1].url);
+            router.push(images[index + 1].url);
         } else {
             router.push('/');
         }
-    }, [photos, id, router, setDirection]);
+    }, [images, id, router, setDirection]);
 
-    const onPrev = useCallback(() => {
-        const index = photos.findIndex((p) => p.name === id);
+    const prevImage = useCallback(() => {
+        const index = images.findIndex((p) => p.name === id);
         if (index > 0) {
             setDirection(-1);
-            router.push(photos[index - 1].url);
+            router.push(images[index - 1].url);
         } else {
             router.push('/');
         }
-    }, [photos, id, router, setDirection]);
+    }, [images, id, router, setDirection]);
 
+    // try to open next/prev image on pressing arrow keys
     const onKeyDown = useCallback(
         (e: KeyboardEvent) => {
-            if (e.key === 'ArrowRight') onNext();
-            if (e.key === 'ArrowLeft') onPrev();
+            if (e.key === 'ArrowRight') nextImage();
+            if (e.key === 'ArrowLeft') prevImage();
         },
-        [onNext, onPrev]
+        [nextImage, prevImage]
     );
 
+    // handle tap event (from Modal component) to go to next/prev image
     const onTap = useCallback(
         (e: ReactMouseEvent | ReactTouchEvent) => {
             const clientX =
@@ -58,20 +65,58 @@ export default function ModalImage({ id }: { id: string }) {
                       ? e.nativeEvent?.clientX
                       : 0;
             if (clientX > window.innerWidth / 2) {
-                onNext();
+                nextImage();
             } else {
-                onPrev();
+                prevImage();
             }
         },
-        [onNext, onPrev]
+        [nextImage, prevImage]
+    );
+
+    // handle mousemove event to show an arrow indicating that we can go to next/prev image
+    const onMouseMove = useCallback(
+        (e: MouseEvent) => {
+            // hide arrow if mouse is over close button
+            // not the best solution as it supposes that the close button has smth like 'close' in its className
+            if (
+                e.target instanceof HTMLElement &&
+                e.target.className?.includes('close')
+            ) {
+                setShowArrow(false);
+                return;
+            }
+            if (arrow.current != null && arrow.current.parentElement != null) {
+                const p = getAbsolutePosition(arrow.current.parentElement);
+                const rect = arrow.current.getBoundingClientRect();
+                if (e.clientX > window.innerWidth / 2) {
+                    arrow.current.style.transform = 'rotateY(0deg)';
+                    arrow.current.style.top =
+                        e.clientY - p.y - 0.2 * rect.height + 'px';
+                    arrow.current.style.left =
+                        e.clientX - p.x - rect.width + 'px';
+                } else {
+                    arrow.current.style.transform = 'rotateY(180deg)';
+                    arrow.current.style.top =
+                        e.clientY - p.y - 0.2 * rect.height + 'px';
+                    arrow.current.style.left = e.clientX - p.x + 'px';
+                }
+                arrow.current.style.opacity = '1';
+                arrow.current.style.transition =
+                    'top 0.1s ease-out, left 0.1s ease-out, transform 0.5s ease-out, opacity 1s ease-out';
+            }
+            setShowArrow(true);
+        },
+        [setShowArrow, arrow]
     );
 
     useEffect(() => {
-        document.addEventListener('keydown', onKeyDown);
+        window.addEventListener('keydown', onKeyDown);
+        window.addEventListener('mousemove', onMouseMove);
         return () => {
-            document.removeEventListener('keydown', onKeyDown);
+            window.removeEventListener('keydown', onKeyDown);
+            window.removeEventListener('mousemove', onMouseMove);
         };
-    }, [onKeyDown]);
+    }, [onKeyDown, onMouseMove]);
 
     return (
         <Modal
@@ -82,23 +127,32 @@ export default function ModalImage({ id }: { id: string }) {
                     <a href="mailto:artem.kdr@gmail.com" className="font-bold">
                         contact me
                     </a>{' '}
-                    for a better quality photo.
+                    for a better quality image.
                 </div>
             }
         >
-            {photo != null ? (
+            {image != null ? (
                 <>
                     <motion.div
-                        key={photo.src}
+                        key={image.src}
                         initial={{ opacity: 0, x: direction * 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
                     >
-                        <FullImage src={photo.src} alt={photo.alt} />
+                        <FullImage src={image.src} alt={image.alt} />
                     </motion.div>
                 </>
             ) : (
-                <div>Photo not found</div>
+                <div>Image not found</div>
+            )}
+            {showArrow && (
+                <div
+                    ref={arrow}
+                    className="arrow-svg absolute z-10 top-20 left-0 w-14 h-14 bg-no-repeat opacity-0"
+                    style={{
+                        backgroundSize: '60%',
+                    }}
+                />
             )}
         </Modal>
     );
