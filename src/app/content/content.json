@@ -1,0 +1,38 @@
+{
+    "Common": {
+        "Title": "Artem Kudryavtsev's photos",
+        "Description": "Hi, my name is Artem Kudryavtsev, I'm a photographer based in Switzerland.",
+        "Name": "Artem Kudryavtsev",
+        "Copyright": "All rights reserved © {year}. Please do not use photos without my permission.",
+        "Email": "artem.kdr@mail.com"
+    },
+    "Home": {
+        "Intro": [
+            "Hi, my name is Artem Kudryavtsev, I&apos;m a photographer based in Switzerland.",
+            "Here you will find a collection of my best work capturing moments.",
+            "These photos were taken with digital cameras (Sony a6000, Sony A7III), mobile phone camera, film camera (Olympus XA), action camera and a drone.",
+            "Don't hesitate to <a href=\"mailto:artem.kdr@gmail.com\">contact me</a> for any inquiries or collaborations concerning photography or if you want a similar website."
+        ]
+    },
+    "Photo": {
+        "Footer": "Do not hesitate to <a href=\"mailto:artem.kdr@gmail.com?subject=Photo {subject}\">contact me</a> for a better quality image"
+    },
+    "Links": [
+        {
+            "Title": "Email",
+            "Url": "mailto:artem.kdr@mail.com"
+        },
+        {
+            "Title": "GitHub",
+            "Url": "https://github.com/artemkdr"
+        },
+        {
+            "Title": "Instagram",
+            "Url": "https://instagram.com/artem.kdr"
+        },
+        {
+            "Title": "LinkedIn",
+            "Url": "https://www.linkedin.com/in/artem-kudryavtsev-8937144/"
+        }
+    ]
+}

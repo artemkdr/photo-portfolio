@@ -5,7 +5,6 @@ import React, {
     MouseEvent,
     MouseEventHandler,
     TouchEvent,
-    TouchEventHandler,
     useCallback,
     useEffect,
     useRef,
@@ -40,17 +39,6 @@ export default function Modal({
         [onDismiss, onTap]
     );
 
-    const onTouch: TouchEventHandler = useCallback(
-        (e) => {
-            if (e.target === overlay.current || e.target === wrapper.current) {
-                onDismiss();
-            } else if (onTap != null) {
-                onTap(e);
-            }
-        },
-        [onDismiss, onTap]
-    );
-
     const onKeyDown = useCallback(
         (e: KeyboardEvent) => {
             if (e.key === 'Escape') onDismiss();
@@ -59,21 +47,27 @@ export default function Modal({
     );
 
     useEffect(() => {
+        const windowScrollY = window.scrollY;
+        const bodyOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
         document.addEventListener('keydown', onKeyDown);
-        return () => document.removeEventListener('keydown', onKeyDown);
+        return () => {
+            document.body.style.overflow = bodyOverflow;
+            window.scrollTo(0, windowScrollY);
+            document.removeEventListener('keydown', onKeyDown);
+        };
     }, [onKeyDown]);
 
     return (
         <div
             ref={overlay}
-            className={`fixed z-10 left-0 right-0 top-0 bottom-0 mx-auto bg-black/80`}
+            className={`modal-overlay fixed z-10 left-0 right-0 top-0 bottom-0 mx-auto bg-black/80`}
             onClick={onClick}
-            onTouchStart={onTouch}
         >
             <button
                 ref={closeButton}
                 onClick={() => onDismiss()}
-                className="close-svg absolute top-0 right-0 z-10 w-14 h-14 bg-center bg-no-repeat"
+                className="modal-close-btn close-svg absolute top-0 right-0 z-10 w-14 h-14 bg-center bg-no-repeat"
                 style={{
                     backgroundSize: '60%',
                 }}
@@ -81,7 +75,7 @@ export default function Modal({
 
             <div
                 ref={wrapper}
-                className="w-auto h-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 lg:p-12 p-4"
+                className="modal-wrapper w-auto h-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 lg:p-12 p-4"
             >
                 {children}
             </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { Content } from '@/app/content/content';
 import { Photo } from '@/app/lib/definitions';
 import { DirectionContext } from '@/app/lib/providers/direction-provider';
 import { PhotosContext } from '@/app/lib/providers/photos-provider';
@@ -7,7 +8,7 @@ import FullImage from '@/app/ui/components/full-image';
 import Modal from '@/app/ui/components/modal';
 import { getAbsolutePosition } from '@/app/ui/utils/position';
 import { motion } from 'motion/react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
     MouseEvent as ReactMouseEvent,
     TouchEvent as ReactTouchEvent,
@@ -58,16 +59,23 @@ export default function ModalImage({ id }: { id: string }) {
     // handle tap event (from Modal component) to go to next/prev image
     const onTap = useCallback(
         (e: ReactMouseEvent | ReactTouchEvent) => {
-            const clientX =
-                e.nativeEvent instanceof TouchEvent
-                    ? e.nativeEvent?.touches[0]?.clientX
-                    : e.nativeEvent instanceof PointerEvent
-                      ? e.nativeEvent?.clientX
-                      : 0;
-            if (clientX > window.innerWidth / 2) {
-                nextImage();
-            } else {
-                prevImage();
+            if (
+                e.target instanceof HTMLElement &&
+                (e.target.classList.contains('modal-overlay') ||
+                    e.target.classList.contains('full-image') ||
+                    e.target.classList.contains('modal-wrapper'))
+            ) {
+                const clientX =
+                    e.nativeEvent instanceof TouchEvent
+                        ? e.nativeEvent?.touches[0]?.clientX
+                        : e.nativeEvent instanceof PointerEvent
+                          ? e.nativeEvent?.clientX
+                          : 0;
+                if (clientX > window.innerWidth / 2) {
+                    nextImage();
+                } else {
+                    prevImage();
+                }
             }
         },
         [nextImage, prevImage]
@@ -122,13 +130,15 @@ export default function ModalImage({ id }: { id: string }) {
         <Modal
             onTap={onTap}
             footer={
-                <div className="bg-black/80 p-2 text-nowrap absolute bottom-0 left-1/2 -translate-x-1/2 text-gray-400 z-10 font-thin">
-                    Do not hesitate to{' '}
-                    <a href="mailto:artem.kdr@gmail.com" className="font-bold">
-                        contact me
-                    </a>{' '}
-                    for a better quality image.
-                </div>
+                <div
+                    className="bg-black/80 p-2 text-nowrap absolute bottom-0 left-1/2 -translate-x-1/2 text-gray-400 z-10 font-thin"
+                    dangerouslySetInnerHTML={{
+                        __html: Content.Photo.Footer.replace(
+                            '{subject}',
+                            encodeURIComponent(usePathname())
+                        ),
+                    }}
+                ></div>
             }
         >
             {image != null ? (
@@ -139,7 +149,11 @@ export default function ModalImage({ id }: { id: string }) {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
                     >
-                        <FullImage src={image.src} alt={image.alt} />
+                        <FullImage
+                            src={image.src}
+                            alt={image.alt}
+                            className="full-image"
+                        />
                     </motion.div>
                 </>
             ) : (

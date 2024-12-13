@@ -1,6 +1,9 @@
+import { Content } from '@/app/content/content';
 import { fetchPhotos } from '@/app/lib/data';
 import DirectionProvider from '@/app/lib/providers/direction-provider';
 import PhotosProvider from '@/app/lib/providers/photos-provider';
+import ThemeProvider from '@/app/lib/providers/theme-provider';
+import ThemeButton from '@/app/ui/components/theme-button';
 import type { Metadata } from 'next';
 import { Roboto_Condensed } from 'next/font/google';
 import './globals.css';
@@ -11,9 +14,8 @@ const robotoCondensed = Roboto_Condensed({
 });
 
 export const metadata: Metadata = {
-    title: "Artem Kudryavtsev's photos",
-    description:
-        "Hi, my name is Artem Kudryavtsev, I'm a photographer based in Switzerland.",
+    title: Content.Common.Title,
+    description: Content.Common.Description,
 };
 
 export default async function RootLayout({
@@ -28,12 +30,15 @@ export default async function RootLayout({
     return (
         <html lang="en">
             <body className={`${robotoCondensed.className} antialiased`}>
-                <PhotosProvider value={photos}>
-                    <DirectionProvider>
-                        {children}
-                        {modal}
-                    </DirectionProvider>
-                </PhotosProvider>
+                <ThemeProvider>
+                    <PhotosProvider value={photos}>
+                        <DirectionProvider>
+                            {<ThemeButton />}
+                            {children}
+                            {modal}
+                        </DirectionProvider>
+                    </PhotosProvider>
+                </ThemeProvider>
             </body>
         </html>
     );
