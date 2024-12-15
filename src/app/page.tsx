@@ -10,7 +10,12 @@ export default async function Home() {
                     {Content.Home.Intro.map((text, index) => (
                         <p
                             key={index}
-                            dangerouslySetInnerHTML={{ __html: text }}
+                            dangerouslySetInnerHTML={{
+                                __html: text.replace(
+                                    '{email}',
+                                    Content.Common.Email
+                                ),
+                            }}
                         />
                     ))}
                 </div>
@@ -21,12 +26,28 @@ export default async function Home() {
                     <div className="flex flex-row justify-center gap-4">
                         {Content.Links.map((link) => (
                             <a
-                                key={link.Url}
-                                href={link.Url}
+                                key={link.Url.replace(
+                                    '{email}',
+                                    Content.Common.Email
+                                )}
+                                href={link.Url.replace(
+                                    '{email}',
+                                    Content.Common.Email
+                                )}
                                 target="_blank"
-                                title={Content.Common.Name + ' ' + link.Title}
+                                title={
+                                    Content.Common.Name +
+                                    ' ' +
+                                    link.Title.replace(
+                                        '{email}',
+                                        Content.Common.Email
+                                    )
+                                }
                             >
-                                {link.Title}
+                                {link.Title.replace(
+                                    '{email}',
+                                    Content.Common.Email
+                                )}
                             </a>
                         ))}
                     </div>

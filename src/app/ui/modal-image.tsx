@@ -136,7 +136,7 @@ export default function ModalImage({ id }: { id: string }) {
                         __html: Content.Photo.Footer.replace(
                             '{subject}',
                             encodeURIComponent(usePathname())
-                        ),
+                        ).replace('{email}', Content.Common.Email),
                     }}
                 ></div>
             }

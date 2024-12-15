@@ -8,19 +8,19 @@
     },
     "Home": {
         "Intro": [
-            "Hi, my name is Artem Kudryavtsev, I&apos;m a photographer based in Switzerland.",
+            "Hi, my name is Artem Kudryavtsev, I'm a photo enthusiast based in Switzerland.",
             "Here you will find a collection of my best work capturing moments.",
             "These photos were taken with digital cameras (Sony a6000, Sony A7III), mobile phone camera, film camera (Olympus XA), action camera and a drone.",
-            "Don't hesitate to <a href=\"mailto:artem.kdr@gmail.com\">contact me</a> for any inquiries or collaborations concerning photography or if you want a similar website."
+            "Don't hesitate to <a href=\"mailto:{email}\">contact me</a> for any inquiries or collaborations concerning photography or if you want a similar website."
         ]
     },
     "Photo": {
-        "Footer": "Do not hesitate to <a href=\"mailto:artem.kdr@gmail.com?subject=Photo {subject}\">contact me</a> for a better quality image"
+        "Footer": "Do not hesitate to <a href=\"mailto:{email}?subject=Photo {subject}\">contact me</a> for a better quality image"
     },
     "Links": [
         {
             "Title": "Email",
-            "Url": "mailto:artem.kdr@mail.com"
+            "Url": "mailto:{email}"
         },
         {
             "Title": "GitHub",
