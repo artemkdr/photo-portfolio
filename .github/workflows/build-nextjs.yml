@@ -31,7 +31,12 @@ jobs:
                   # If source files changed but packages didn't, rebuild from a prior cache.
                   restore-keys: |
                       ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-            # - run: npm ci # Install dependencies (faster than npm install)
-            - run: npm install # Install dependencies (we use this temporarily because `npm ci` does not work for some reason)
-            - run: npm run build # Build the app
-            - run: npm run test # Test the app
+            - name: Install dependencies
+              # run: npm ci # Install dependencies (faster than npm install)
+              run: npm install # Install dependencies (we use this temporarily because `npm ci` does not work for some reason)
+            - name: Build
+              env:
+                  BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_TOKEN }}
+              run: npm run build # Build the app
+            - name: Test
+              run: npm run test # Test the app

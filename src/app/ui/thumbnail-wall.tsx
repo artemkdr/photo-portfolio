@@ -1,5 +1,6 @@
 'use client';
 
+import { Content } from '@/app/content/content';
 import { PhotosContext } from '@/app/lib/providers/photos-provider';
 import { motion } from 'motion/react';
 import Image from 'next/image';
@@ -11,9 +12,11 @@ export const ThumbnailWall = () => {
     const photos = useContext(PhotosContext);
 
     // a state variable to check if the component is rendered on the client side
-    const [isCSR, setIsSCR] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const [isIntroCompleted, setIsIntroCompleted] = useState(false);
     const [touchMoveEnabled, setTouchMoveEnabled] = useState(false);
+    const [isEffectEnabled, setIsEffectEnabled] = useState(true);
+
     const pathname = usePathname();
     const tileWidth = 50;
     const tileHeight = 50;
@@ -28,7 +31,7 @@ export const ThumbnailWall = () => {
     );
 
     useEffect(() => {
-        setIsSCR(true);
+        setMounted(true);
     }, []);
 
     const getContainerRect = useCallback(() => {
@@ -48,6 +51,8 @@ export const ThumbnailWall = () => {
     }, [containerId]);
     const processItems = useCallback(
         (pointX: number, pointY: number) => {
+            if (!isEffectEnabled) return;
+
             const maxDistance = getContainerRect().width;
             document
                 .querySelectorAll(`#${containerId} .item`)
@@ -88,6 +93,7 @@ export const ThumbnailWall = () => {
                 });
         },
         [
+            isEffectEnabled,
             containerId,
             getContainerRect,
             scaleMultiplier,
@@ -173,59 +179,77 @@ export const ThumbnailWall = () => {
         };
     });
 
-    return !isCSR ? (
+    return !mounted ? (
         <div className="flex justify-center items-center text-center min-h-20">
-            loading...
+            {Content.Common.Loading}
         </div>
     ) : (
-        <div
-            id={containerId}
-            className="flex flex-wrap"
-            style={{ perspective: '50px' }}
-        >
-            {photos?.map((photo, index) => (
-                <motion.div
-                    key={photo.src}
-                    initial={{
-                        opacity: 0,
-                        x: -500 + Math.random() * 500,
-                        y: -200 + Math.random() * 400,
-                        rotateY: -20 + Math.random() * 40,
-                        rotateZ: -10 + Math.random() * 20,
-                        scaleX: 2,
-                        scaleY: 2,
-                    }}
-                    animate={{
-                        opacity: 1,
-                        x: 0,
-                        y: 0,
-                        rotateY: 0,
-                        rotateZ: 0,
-                        scaleX: 1,
-                        scaleY: 1,
-                    }}
-                    transition={{
-                        duration: 0.5,
-                        delay: 0.5 + index * 0.01,
-                        type: 'spring',
-                    }}
-                    onAnimationComplete={() =>
-                        setIsIntroCompleted(index == photos.length - 1)
-                    }
-                >
-                    <Link href={photo.url} className="item">
-                        <Image
-                            className={`object-cover`}
-                            src={photo.src}
-                            alt={photo.alt}
-                            width={tileWidth * maxScale}
-                            height={tileHeight * maxScale}
-                            style={{ width: tileWidth, height: tileHeight }}
-                            quality={50}
-                        />
-                    </Link>
-                </motion.div>
-            ))}
-        </div>
+        <>
+            <button
+                className="p-2 pr-4 pl-4 text-xs rounded-md bg-[rgba(0,0,0,0.1)] dark:bg-[rgba(255,255,255,0.1)] float-right clear-both"
+                style={{
+                    transition: 'width 0.5s ease-out',
+                }}
+                aria-label={Content.Gallery.TurnEffect.replace(
+                    '{state}',
+                    isEffectEnabled ? 'off' : 'on'
+                )}
+                onClick={() => setIsEffectEnabled(!isEffectEnabled)}
+            >
+                {Content.Gallery.TurnEffect.replace(
+                    '{state}',
+                    isEffectEnabled ? 'off' : 'on'
+                )}
+            </button>
+            <div
+                id={containerId}
+                className="flex flex-wrap clear-both"
+                style={{ perspective: '50px' }}
+            >
+                {photos?.map((photo, index) => (
+                    <motion.div
+                        key={photo.src}
+                        initial={{
+                            opacity: 0,
+                            x: -500 + Math.random() * 500,
+                            y: -200 + Math.random() * 400,
+                            rotateY: -20 + Math.random() * 40,
+                            rotateZ: -10 + Math.random() * 20,
+                            scaleX: 2,
+                            scaleY: 2,
+                        }}
+                        animate={{
+                            opacity: 1,
+                            x: 0,
+                            y: 0,
+                            rotateY: 0,
+                            rotateZ: 0,
+                            scaleX: 1,
+                            scaleY: 1,
+                        }}
+                        transition={{
+                            duration: 0.5,
+                            delay: 0.5 + index * 0.01,
+                            type: 'spring',
+                        }}
+                        onAnimationComplete={() =>
+                            setIsIntroCompleted(index == photos.length - 1)
+                        }
+                    >
+                        <Link href={photo.url} className="item">
+                            <Image
+                                className={`object-cover`}
+                                src={photo.src}
+                                alt={photo.alt}
+                                width={tileWidth * maxScale}
+                                height={tileHeight * maxScale}
+                                style={{ width: tileWidth, height: tileHeight }}
+                                quality={50}
+                            />
+                        </Link>
+                    </motion.div>
+                ))}
+            </div>
+        </>
     );
 };

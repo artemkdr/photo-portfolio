@@ -4,7 +4,8 @@
         "Description": "Hi, my name is Artem Kudryavtsev, I'm a photo enthusiast based in Switzerland.",
         "Name": "Artem Kudryavtsev",
         "Copyright": "All rights reserved © {year}. Please do not use photos without my permission.",
-        "Email": "artem.kdr@gmail.com"
+        "Email": "artem.kdr@gmail.com",
+        "Loading": "loading..."
     },
     "Home": {
         "Intro": [
@@ -13,6 +14,9 @@
             "These photos were taken with digital cameras (Sony a6000, Sony A7III), mobile phone camera, film camera (Olympus XA), action camera and a drone.",
             "Don't hesitate to <a href=\"mailto:{email}\">contact me</a> for any inquiries or collaborations concerning photography or if you want a similar website."
         ]
+    },
+    "Gallery": {
+        "TurnEffect": "Turn {state} the effect"
     },
     "Photo": {
         "Footer": "Do not hesitate to <a href=\"mailto:{email}?subject=Photo {subject}\">contact me</a> for a better quality image"

@@ -2,6 +2,8 @@
 
 This is a photo gallery app built with Next.js.
 There are 2 default adapters for loading photos from local folder and from vercel blob storage.
+The photos are rendered as a grid of thumbnails with a modal window for full-size photo.
+The grid has a kind of parallax effect when you move the mouse or you incline your mobile device.
 
 You can find a demo here: https://photo.artem.work
 

@@ -32,6 +32,10 @@ body {
         color 0.6s ease-out;
 }
 
+body.modal-mode {
+    overflow: hidden;
+}
+
 a {
     text-decoration: underline;
 }

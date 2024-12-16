@@ -48,11 +48,10 @@ export default function Modal({
 
     useEffect(() => {
         const windowScrollY = window.scrollY;
-        const bodyOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
+        document.body.classList.add('modal-mode');
         document.addEventListener('keydown', onKeyDown);
         return () => {
-            document.body.style.overflow = bodyOverflow;
+            document.body.classList.remove('modal-mode');
             window.scrollTo(0, windowScrollY);
             document.removeEventListener('keydown', onKeyDown);
         };
@@ -67,6 +66,7 @@ export default function Modal({
             <button
                 ref={closeButton}
                 onClick={() => onDismiss()}
+                aria-label="Close button"
                 className="modal-close-btn close-svg absolute top-0 right-0 z-10 w-14 h-14 bg-center bg-no-repeat"
                 style={{
                     backgroundSize: '60%',

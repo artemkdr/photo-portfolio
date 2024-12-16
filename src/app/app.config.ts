@@ -4,6 +4,6 @@ export const appConfig: {
     photosLimit: number;
 } = {
     blobDomain: '26rwtwzj5lztj5sb.public.blob.vercel-storage.com',
-    dataSource: 'blob',
+    dataSource: process.env.BLOB_READ_WRITE_TOKEN != null ? 'blob' : 'fs',
     photosLimit: 300,
 };
