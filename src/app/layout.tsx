@@ -1,5 +1,5 @@
 import { Content } from '@/app/content/content';
-import { fetchPhotos } from '@/app/lib/data';
+import { fetchPhotos } from '@/app/lib/data/data';
 import DirectionProvider from '@/app/lib/providers/direction-provider';
 import PhotosProvider from '@/app/lib/providers/photos-provider';
 import ThemeProvider from '@/app/lib/providers/theme-provider';
