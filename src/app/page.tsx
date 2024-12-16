@@ -3,7 +3,7 @@ import { ThumbnailWall } from '@/app/ui/thumbnail-wall';
 
 export default async function Home() {
     return (
-        <main className="w-screen flex justify-center items-center p-8">
+        <main className="w-[100%] flex justify-center items-center p-8">
             <div className="flex flex-col max-w-[800px] gap-4">
                 <h1 className="text-2xl font-bold">{Content.Common.Title}</h1>
                 <div>

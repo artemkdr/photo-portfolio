@@ -218,8 +218,8 @@ export const ThumbnailWall = () => {
                             className={`object-cover`}
                             src={photo.src}
                             alt={photo.alt}
-                            width={tileWidth}
-                            height={tileHeight}
+                            width={tileWidth * maxScale}
+                            height={tileHeight * maxScale}
                             style={{ width: tileWidth, height: tileHeight }}
                             quality={50}
                         />
