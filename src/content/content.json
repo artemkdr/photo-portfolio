@@ -5,7 +5,11 @@
         "Name": "Artem Kudryavtsev",
         "Copyright": "All rights reserved © {year}. Please do not use photos without my permission.",
         "Email": "artem.kdr@gmail.com",
-        "Loading": "loading..."
+        "Loading": "loading...",
+        "Return": "Return to the homepage"
+    },
+    "Errors": {
+        "NotFound": "Page not found"
     },
     "Home": {
         "Intro": [
