@@ -1,6 +1,6 @@
 'use client';
 
-import { Photo } from '@/app/lib/definitions';
+import { Photo } from '@/features/photo-wall/types/photo';
 import { createContext } from 'react';
 
 export const PhotosContext = createContext<Photo[]>([] as Photo[]);

@@ -10,15 +10,13 @@ import React, {
     useRef,
 } from 'react';
 
-export default function Modal({
-    children,
-    footer,
-    onTap = null,
-}: {
+export interface ModalProps {
     children: React.ReactNode;
     footer: React.ReactNode;
     onTap?: ((e: MouseEvent | TouchEvent) => void) | null;
-}) {
+}
+
+export default function Modal({ children, footer, onTap = null }: ModalProps) {
     const overlay = useRef(null);
     const wrapper = useRef(null);
     const closeButton = useRef(null);

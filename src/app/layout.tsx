@@ -1,9 +1,10 @@
-import { Content } from '@/app/content/content';
-import { fetchPhotos } from '@/app/lib/data/data';
-import DirectionProvider from '@/app/lib/providers/direction-provider';
-import PhotosProvider from '@/app/lib/providers/photos-provider';
-import ThemeProvider from '@/app/lib/providers/theme-provider';
-import ThemeButton from '@/app/ui/components/theme-button';
+import { appConfig } from '@/app.config';
+import { Content } from '@/content/content';
+import DirectionProvider from '@/features/photo-wall/contexts/direction-provider';
+import PhotosProvider from '@/features/photo-wall/contexts/photos-provider';
+import { fetchPhotos } from '@/features/photo-wall/data/data';
+import ThemeButton from '@/features/theme-switcher/components/theme-button';
+import ThemeProvider from '@/features/theme-switcher/contexts/theme-provider';
 import type { Metadata } from 'next';
 import { Roboto_Condensed } from 'next/font/google';
 import './globals.css';
@@ -25,7 +26,10 @@ export default async function RootLayout({
     children: React.ReactNode;
     modal: React.ReactNode;
 }>) {
-    const photos = await fetchPhotos();
+    const photos = await fetchPhotos(
+        appConfig.dataSource,
+        appConfig.photosLimit
+    );
 
     return (
         <html lang="en">

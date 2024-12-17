@@ -17,5 +17,6 @@ export async function fetchPhotosFromBlob() {
             });
         }
     }
+    photos.sort((a, b) => -1 * (a.created.getTime() - b.created.getTime()));
     return photos;
 }

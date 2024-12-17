@@ -1,14 +1,13 @@
 'use client';
 
-import { Content } from '@/app/content/content';
-import { Photo } from '@/app/lib/definitions';
-import { DirectionContext } from '@/app/lib/providers/direction-provider';
-import { PhotosContext } from '@/app/lib/providers/photos-provider';
-import FullImage from '@/app/ui/components/full-image';
-import Modal from '@/app/ui/components/modal';
-import { getAbsolutePosition } from '@/app/ui/utils/position';
+import FullImage from '@/features/photo-wall/components/full-image';
+import Modal from '@/features/photo-wall/components/modal';
+import { DirectionContext } from '@/features/photo-wall/contexts/direction-provider';
+import { PhotosContext } from '@/features/photo-wall/contexts/photos-provider';
+import { Photo } from '@/features/photo-wall/types/photo';
+import { getAbsolutePosition } from '@/features/photo-wall/utils/position';
 import { motion } from 'motion/react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
     MouseEvent as ReactMouseEvent,
     TouchEvent as ReactTouchEvent,
@@ -19,7 +18,12 @@ import {
     useState,
 } from 'react';
 
-export default function ModalImage({ id }: { id: string }) {
+interface ModalImageProps {
+    id: string;
+    footer?: React.ReactNode;
+}
+
+export default function ModalImage({ id, footer }: ModalImageProps) {
     const router = useRouter();
     const images = useContext(PhotosContext);
     const image = images.find((p) => p.name === id) as Photo;
@@ -85,7 +89,7 @@ export default function ModalImage({ id }: { id: string }) {
     const onMouseMove = useCallback(
         (e: MouseEvent) => {
             // hide arrow if mouse is over close button
-            // not the best solution as it supposes that the close button has smth like 'close' in its className
+            // not the best solution as it supposes that the close button has smth like "close" in its className
             if (
                 e.target instanceof HTMLElement &&
                 e.target.className?.includes('close')
@@ -127,20 +131,7 @@ export default function ModalImage({ id }: { id: string }) {
     }, [onKeyDown, onMouseMove]);
 
     return (
-        <Modal
-            onTap={onTap}
-            footer={
-                <div
-                    className="bg-black/80 p-2 text-nowrap absolute bottom-0 left-1/2 -translate-x-1/2 text-gray-400 z-10 font-thin"
-                    dangerouslySetInnerHTML={{
-                        __html: Content.Photo.Footer.replace(
-                            '{subject}',
-                            encodeURIComponent(usePathname())
-                        ).replace('{email}', Content.Common.Email),
-                    }}
-                ></div>
-            }
-        >
+        <Modal onTap={onTap} footer={footer}>
             {image != null ? (
                 <>
                     <motion.div

@@ -1,5 +1,5 @@
-import { Content } from '@/app/content/content';
-import { ThumbnailWall } from '@/app/ui/thumbnail-wall';
+import { Content } from '@/content/content';
+import { ThumbnailWall } from '@/features/photo-wall/thumbnail-wall';
 
 export default async function Home() {
     return (

@@ -1,4 +1,4 @@
-import { appConfig } from '@/app/app.config';
+import { appConfig } from '@/app.config';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {};

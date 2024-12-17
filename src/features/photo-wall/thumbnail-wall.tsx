@@ -1,7 +1,7 @@
 'use client';
 
-import { Content } from '@/app/content/content';
-import { PhotosContext } from '@/app/lib/providers/photos-provider';
+import { Content } from '@/content/content';
+import { PhotosContext } from '@/features/photo-wall/contexts/photos-provider';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
