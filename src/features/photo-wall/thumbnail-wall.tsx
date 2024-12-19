@@ -2,6 +2,7 @@
 
 import { Content } from '@/content/content';
 import { PhotosContext } from '@/features/photo-wall/contexts/photos-provider';
+import { throttleWithDebounce } from '@/features/photo-wall/utils/throttler-with-debouncer';
 import { isBot } from '@/features/photo-wall/utils/user-agent';
 import { motion, MotionGlobalConfig } from 'motion/react';
 import Image from 'next/image';
@@ -110,11 +111,15 @@ export const ThumbnailWall = () => {
             maxScale,
         ]
     );
+    const processItemsThrottled = throttleWithDebounce(
+        processItems as (...args: (number | string | object)[]) => void,
+        100
+    );
 
     const moveEventHandler = useCallback(
         (e: MouseEvent | TouchEvent) => {
             if (isIntroCompleted && pathname === '/') {
-                processItems(
+                processItemsThrottled(
                     e instanceof MouseEvent
                         ? e.clientX
                         : e instanceof TouchEvent
@@ -128,15 +133,15 @@ export const ThumbnailWall = () => {
                 );
             }
         },
-        [processItems, isIntroCompleted, pathname]
+        [processItemsThrottled, isIntroCompleted, pathname]
     );
 
     const onTouchStart = useCallback(
         (e: TouchEvent) => {
             setTouchMoveEnabled(true);
-            processItems(e.touches[0].clientX, e.touches[0].clientY);
+            processItemsThrottled(e.touches[0].clientX, e.touches[0].clientY);
         },
-        [processItems, setTouchMoveEnabled]
+        [processItemsThrottled, setTouchMoveEnabled]
     );
 
     const onTouchEnd = useCallback(() => {
@@ -152,7 +157,7 @@ export const ThumbnailWall = () => {
             if (leftRightAngle != null && forwardBackwardAngle != null) {
                 if (isIntroCompleted && pathname === '/') {
                     const rect = getContainerRect();
-                    processItems(
+                    processItemsThrottled(
                         ((-leftRightAngle + 45) * rect.width) / 90,
                         ((-forwardBackwardAngle + 90) * rect.height) / 180
                     );
@@ -163,7 +168,7 @@ export const ThumbnailWall = () => {
             isIntroCompleted,
             pathname,
             getContainerRect,
-            processItems,
+            processItemsThrottled,
             touchMoveEnabled,
         ]
     );

@@ -175,14 +175,20 @@ const patterns = [
     'zgrab',
 ];
 
-export const isBot = (userAgent: string | null | undefined): boolean => {
-    if (!userAgent) {
-        return false;
-    }
-    for (const pattern of patterns) {
-        if (new RegExp(pattern, 'i').test(userAgent)) {
-            return true;
+export const isBot = (function () {
+    const cache = new Map<string, boolean>();
+
+    return function isBotImpl(userAgent: string | null | undefined): boolean {
+        if (!userAgent) {
+            return false;
         }
-    }
-    return false;
-};
+        if (cache.has(userAgent)) {
+            return cache.get(userAgent) as boolean;
+        }
+        const rslt = patterns.some((pattern) =>
+            new RegExp(pattern, 'i').test(userAgent)
+        );
+        cache.set(userAgent, rslt);
+        return rslt;
+    };
+})();
