@@ -1,16 +1,24 @@
-import { list } from '@vercel/blob';
+import { list, ListBlobResultBlob } from '@vercel/blob';
+import path from 'path';
 
-export async function fetchPhotosFromBlob() {
-    const photosDir = 'photos/';
-    const photoPathDir = '/photo/';
-    const { blobs } = await list({ prefix: photosDir });
+export async function fetchPhotosFromBlob(photosDir: string = 'photos') {
+    let blobs: ListBlobResultBlob[] = [] as ListBlobResultBlob[];
+    try {
+        blobs = (await list({ prefix: photosDir })).blobs;
+    } catch (error) {
+        console.error('Failed to fetch photos from blob storage', error);
+    }
     const photos = [];
+    const extensions = ['.jpg', '.webp', '.jpeg', '.png', 'bmp'];
     for (const blob of blobs) {
         const filename = blob.pathname?.split('/').pop();
-        if (filename !== undefined && filename.length > 0) {
+        if (
+            filename !== undefined &&
+            filename.length > 0 &&
+            extensions.includes(path.extname(filename)?.toLocaleLowerCase())
+        ) {
             photos.push({
                 src: blob.url,
-                url: `${photoPathDir}${filename}`,
                 name: encodeURIComponent(filename),
                 alt: filename,
                 created: blob.uploadedAt,

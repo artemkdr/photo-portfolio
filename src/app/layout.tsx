@@ -30,7 +30,6 @@ export default async function RootLayout({
         appConfig.dataSource,
         appConfig.photosLimit
     );
-
     return (
         <html lang="en">
             <body className={`${robotoCondensed.className} antialiased`}>

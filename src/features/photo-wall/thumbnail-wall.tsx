@@ -208,7 +208,7 @@ export const ThumbnailWall = () => {
             >
                 {photos?.map((photo, index) => (
                     <motion.div
-                        key={photo.src}
+                        key={`${photo.name}-${index}`}
                         initial={{
                             opacity: 0,
                             x: -500 + Math.random() * 500,

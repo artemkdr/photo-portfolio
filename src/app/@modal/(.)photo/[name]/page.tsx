@@ -1,3 +1,4 @@
+import { appConfig } from '@/app.config';
 import { Content } from '@/content/content';
 import ModalImage from '@/features/photo-wall/components/modal-image';
 
@@ -16,7 +17,9 @@ const InterceptedRoute = async ({
                     dangerouslySetInnerHTML={{
                         __html: Content.Photo.Footer.replace(
                             '{subject}',
-                            encodeURIComponent(`/photo/${name}`)
+                            encodeURIComponent(
+                                `/${appConfig.photosPath}/${name}`
+                            )
                         ).replace('{email}', Content.Common.Email),
                     }}
                 />

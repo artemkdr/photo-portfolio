@@ -5,7 +5,13 @@ const nextConfig: NextConfig = {};
 
 if (appConfig.blobDomain !== undefined) {
     nextConfig.images = {
-        domains: [appConfig.blobDomain],
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: appConfig.blobDomain,
+                pathname: `/${appConfig.photosDir}/**`,
+            },
+        ],
     };
 }
 
