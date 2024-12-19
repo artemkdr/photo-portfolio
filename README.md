@@ -13,7 +13,7 @@ Or click on the image to watch the short video of the effect:
 
 ## Configuration
 
-You can switch between them in the [config file](./src/app/app.config.ts):
+You can switch between them in the [config file](./src/app.config.ts):
 
 ### Blob
 
@@ -21,7 +21,7 @@ You can switch between them in the [config file](./src/app/app.config.ts):
 dataSource: 'blob';
 ```
 
-You have to provide Vercel blob storage token in .env.development.local file:
+You have to provide Vercel blob storage token in `.env.development.local` file:
 
 ```
 BLOB_READ_WRITE_TOKEN=<token goes here>
@@ -52,3 +52,20 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## How to build production version
+
+```bash
+npm run build
+npm run start
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## How to deploy
+
+- If you have [Vercel](https://github.com/vercel) account, then you can configure automatic deployment on their servers on every commit.
+
+- You can use [Dockerfile](./Dockerfile) to build the image and run it as a container.
+
+- You can use your own Node.js server to run the build with `npm run start`
