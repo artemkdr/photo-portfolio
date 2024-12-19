@@ -8,7 +8,9 @@ export default function ThemeButton() {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
+        if (typeof window !== 'undefined') {
+            setMounted(true);
+        }
     }, []);
 
     if (!mounted) {

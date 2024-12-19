@@ -58,6 +58,7 @@ export default function Modal({ children, footer, onTap = null }: ModalProps) {
     return (
         <div
             ref={overlay}
+            data-testid="overlay"
             className={`modal-overlay fixed z-10 left-0 right-0 top-0 bottom-0 mx-auto bg-black/80`}
             onClick={onClick}
         >

@@ -2,7 +2,8 @@
 
 import { Content } from '@/content/content';
 import { PhotosContext } from '@/features/photo-wall/contexts/photos-provider';
-import { motion } from 'motion/react';
+import { isBot } from '@/features/photo-wall/utils/user-agent';
+import { motion, MotionGlobalConfig } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -31,7 +32,13 @@ export const ThumbnailWall = () => {
     );
 
     useEffect(() => {
-        setMounted(true);
+        if (typeof window !== 'undefined') {
+            // turn off animations for the bots
+            if (isBot(navigator.userAgent)) {
+                MotionGlobalConfig.skipAnimations = true;
+            }
+            setMounted(true);
+        }
     }, []);
 
     const getContainerRect = useCallback(() => {
@@ -194,6 +201,7 @@ export const ThumbnailWall = () => {
                     '{state}',
                     isEffectEnabled ? 'off' : 'on'
                 )}
+                aria-pressed={isEffectEnabled}
                 onClick={() => setIsEffectEnabled(!isEffectEnabled)}
             >
                 {Content.Gallery.TurnEffect.replace(
