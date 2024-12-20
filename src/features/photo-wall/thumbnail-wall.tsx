@@ -1,6 +1,7 @@
 'use client';
 
 import { Content } from '@/content/content';
+import Loader from '@/features/photo-wall/components/loader';
 import { PhotosContext } from '@/features/photo-wall/contexts/photos-provider';
 import { debounce } from '@/features/photo-wall/utils/debouncer';
 import { throttleWithDebounce } from '@/features/photo-wall/utils/throttler-with-debouncer';
@@ -221,9 +222,7 @@ export const ThumbnailWall = () => {
     }, [isEffectEnabled, resetItemsDebounced]);
 
     return !mounted ? (
-        <div className="flex justify-center items-center text-center min-h-20">
-            {Content.Common.Loading}
-        </div>
+        <Loader />
     ) : (
         <>
             <button
@@ -271,7 +270,7 @@ export const ThumbnailWall = () => {
                         }}
                         transition={{
                             duration: 0.5,
-                            delay: 0.5 + index * 0.01,
+                            delay: 0.1 + index * 0.01,
                             type: 'spring',
                         }}
                         onAnimationComplete={() =>
