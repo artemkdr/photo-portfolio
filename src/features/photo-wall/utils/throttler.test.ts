@@ -56,7 +56,8 @@ describe('throttle', () => {
         const fn = vi.fn();
         const throttledFn = throttle(fn, 1000);
 
-        throttledFn(1, 2, 3);
-        expect(fn).toHaveBeenCalledWith(1, 2, 3);
+        const argO = {};
+        throttledFn(1, 2, '3', argO);
+        expect(fn).toHaveBeenCalledWith(1, 2, '3', argO);
     });
 });

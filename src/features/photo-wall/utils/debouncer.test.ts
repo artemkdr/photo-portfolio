@@ -32,10 +32,10 @@ describe('debounce', () => {
         vi.useFakeTimers();
         const fn = vi.fn();
         const debouncedFn = debounce(fn, 1000);
-
-        debouncedFn('arg1', 'arg2');
+        const argO = {};
+        debouncedFn('arg1', 'arg2', 3, argO);
         vi.advanceTimersByTime(1000);
-        expect(fn).toHaveBeenNthCalledWith(1, 'arg1', 'arg2');
+        expect(fn).toHaveBeenNthCalledWith(1, 'arg1', 'arg2', 3, argO);
     });
 
     it('should reset the delay if called again within the delay period', () => {

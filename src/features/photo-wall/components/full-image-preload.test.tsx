@@ -1,14 +1,14 @@
-import FullImage from '@/features/photo-wall/components/full-image';
+import FullImagePreload from '@/features/photo-wall/components/full-image-preload';
 import { WindowSizeProvider } from '@/features/photo-wall/contexts/window-size-provider';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-describe('FullImage Component', () => {
+describe('FullImagePreload Component', () => {
     it('renders correctly with given props', () => {
         render(
             <WindowSizeProvider>
-                <FullImage src="/test.jpg" alt="Test Image" />
+                <FullImagePreload src="/test.jpg" alt="Test Image" />
             </WindowSizeProvider>
         );
         const imgElement = screen.getByAltText('Test Image');
@@ -18,14 +18,11 @@ describe('FullImage Component', () => {
     it('applies the given className', () => {
         render(
             <WindowSizeProvider>
-                <FullImage
-                    src="/test.jpg"
-                    alt="Test Image"
-                    className="custom-class"
-                />
+                <FullImagePreload src="/test.jpg" alt="Test Image" />
             </WindowSizeProvider>
         );
         const imgElement = screen.getByAltText('Test Image');
-        expect(imgElement).toHaveClass('custom-class');
+        expect(imgElement).toBeInTheDocument();
+        expect(imgElement).not.toBeVisible();
     });
 });

@@ -79,7 +79,9 @@ describe('ModalImage', () => {
 
         fireEvent.keyDown(window, { key: 'ArrowRight' });
         expect(mockSetDirection).toHaveBeenCalledWith(1);
-        expect(mockedRouterPush).toHaveBeenCalledWith('/photo2');
+        expect(mockedRouterPush).toHaveBeenCalledWith('/photo2', {
+            scroll: false,
+        });
     });
 
     it('navigates to the previous image on left arrow key press', () => {
@@ -93,7 +95,9 @@ describe('ModalImage', () => {
 
         fireEvent.keyDown(window, { key: 'ArrowLeft' });
         expect(mockSetDirection).toHaveBeenCalledWith(-1);
-        expect(mockedRouterPush).toHaveBeenCalledWith('/photo1');
+        expect(mockedRouterPush).toHaveBeenCalledWith('/photo1', {
+            scroll: false,
+        });
     });
 
     it('navigates to the next image on tap to the right side', () => {
@@ -109,7 +113,9 @@ describe('ModalImage', () => {
             clientX: window.innerWidth - 10,
         });
         expect(mockSetDirection).toHaveBeenCalledWith(1);
-        expect(mockedRouterPush).toHaveBeenCalledWith('/photo2');
+        expect(mockedRouterPush).toHaveBeenCalledWith('/photo2', {
+            scroll: false,
+        });
     });
 
     it('navigates to the previous image on tap to the left side', () => {
@@ -123,6 +129,8 @@ describe('ModalImage', () => {
 
         fireEvent.click(screen.getByAltText('Photo 2'), { clientX: 10 });
         expect(mockSetDirection).toHaveBeenCalledWith(-1);
-        expect(mockedRouterPush).toHaveBeenCalledWith('/photo1');
+        expect(mockedRouterPush).toHaveBeenCalledWith('/photo1', {
+            scroll: false,
+        });
     });
 });

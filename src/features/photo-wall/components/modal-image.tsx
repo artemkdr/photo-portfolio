@@ -1,9 +1,11 @@
 'use client';
 
 import FullImage from '@/features/photo-wall/components/full-image';
+import FullImagePreload from '@/features/photo-wall/components/full-image-preload';
 import Modal from '@/features/photo-wall/components/modal';
 import { DirectionContext } from '@/features/photo-wall/contexts/direction-provider';
 import { PhotosContext } from '@/features/photo-wall/contexts/photos-provider';
+import { WindowSizeProvider } from '@/features/photo-wall/contexts/window-size-provider';
 import { Photo } from '@/features/photo-wall/types/photo';
 import { getAbsolutePosition } from '@/features/photo-wall/utils/position';
 import { motion } from 'motion/react';
@@ -21,43 +23,51 @@ import {
 interface ModalImageProps {
     id: string;
     footer?: React.ReactNode;
+    placeholder?: React.ReactNode;
 }
 
-export default function ModalImage({ id, footer }: ModalImageProps) {
+export default function ModalImage({
+    id,
+    footer,
+    placeholder = null,
+}: ModalImageProps) {
     const router = useRouter();
     const images = useContext(PhotosContext);
     const image = images.find((p) => p.name === id) as Photo;
     const [direction, setDirection] = useContext(DirectionContext);
     const [showArrow, setShowArrow] = useState(false);
+    const [nextImage, setNextImage] = useState<Photo | null>(null);
+    const [prevImage, setPrevImage] = useState<Photo | null>(null);
     const arrow = useRef<HTMLDivElement>(null);
 
-    const nextImage = useCallback(() => {
-        const index = images.findIndex((p) => p.name === id);
-        if (index < images.length - 1) {
-            setDirection(1);
-            router.push(images[index + 1].url);
-        } else {
-            router.push('/');
-        }
-    }, [images, id, router, setDirection]);
+    // a state variable to check if the component is rendered on the client side
+    const [mounted, setMounted] = useState(false);
 
-    const prevImage = useCallback(() => {
-        const index = images.findIndex((p) => p.name === id);
-        if (index > 0) {
-            setDirection(-1);
-            router.push(images[index - 1].url);
+    const openNextImage = useCallback(() => {
+        if (nextImage != null) {
+            setDirection(1);
+            router.push(nextImage.url, { scroll: false });
         } else {
             router.push('/');
         }
-    }, [images, id, router, setDirection]);
+    }, [nextImage, router, setDirection]);
+
+    const openPrevImage = useCallback(() => {
+        if (prevImage != null) {
+            setDirection(-1);
+            router.push(prevImage.url, { scroll: false });
+        } else {
+            router.push('/');
+        }
+    }, [prevImage, router, setDirection]);
 
     // try to open next/prev image on pressing arrow keys
     const onKeyDown = useCallback(
         (e: KeyboardEvent) => {
-            if (e.key === 'ArrowRight') nextImage();
-            if (e.key === 'ArrowLeft') prevImage();
+            if (e.key === 'ArrowRight') openNextImage();
+            if (e.key === 'ArrowLeft') openPrevImage();
         },
-        [nextImage, prevImage]
+        [openNextImage, openPrevImage]
     );
 
     // handle tap event (from Modal component) to go to next/prev image
@@ -76,13 +86,13 @@ export default function ModalImage({ id, footer }: ModalImageProps) {
                           ? e.nativeEvent?.clientX
                           : 0;
                 if (clientX > window.innerWidth / 2) {
-                    nextImage();
+                    openNextImage();
                 } else {
-                    prevImage();
+                    openPrevImage();
                 }
             }
         },
-        [nextImage, prevImage]
+        [openNextImage, openPrevImage]
     );
 
     // handle mousemove event to show an arrow indicating that we can go to next/prev image
@@ -121,6 +131,21 @@ export default function ModalImage({ id, footer }: ModalImageProps) {
         [setShowArrow, arrow]
     );
 
+    // handler four mouunt/unmount:
+    // check if the component is rendered on the client side
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setMounted(true);
+        }
+    }, []);
+
+    useEffect(() => {
+        const index = images.findIndex((p) => p.name === id);
+        setNextImage(index < images.length - 1 ? images[index + 1] : null);
+        setPrevImage(index > 0 ? images[index - 1] : null);
+    }, [id, images]);
+
+    // handler for EVERY render
     useEffect(() => {
         window.addEventListener('keydown', onKeyDown);
         window.addEventListener('mousemove', onMouseMove);
@@ -130,35 +155,52 @@ export default function ModalImage({ id, footer }: ModalImageProps) {
         };
     }, [onKeyDown, onMouseMove]);
 
-    return (
-        <Modal onTap={onTap} footer={footer}>
-            {image != null ? (
-                <>
-                    <motion.div
-                        key={image.src}
-                        initial={{ opacity: 0, x: direction * 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <FullImage
-                            src={image.src}
-                            alt={image.alt}
-                            className="full-image"
-                        />
-                    </motion.div>
-                </>
-            ) : (
-                <div>Image not found</div>
-            )}
-            {showArrow && (
-                <div
-                    ref={arrow}
-                    className="arrow-svg absolute z-10 top-20 left-0 w-14 h-14 bg-no-repeat opacity-0"
-                    style={{
-                        backgroundSize: '60%',
-                    }}
-                />
-            )}
-        </Modal>
+    return !mounted ? (
+        <Modal footer={null}>{placeholder ?? <div>...</div>}</Modal>
+    ) : (
+        <WindowSizeProvider>
+            <Modal onTap={onTap} footer={footer}>
+                {image != null ? (
+                    <>
+                        <motion.div
+                            key={image.src}
+                            initial={{ opacity: 0, x: direction * 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.8 }}
+                        >
+                            <FullImage
+                                src={image.src}
+                                alt={image.alt}
+                                className="full-image"
+                            />
+                            {/* preload prev and next image in background */}
+                            {nextImage && (
+                                <FullImagePreload
+                                    src={nextImage!.src}
+                                    alt={'next-' + nextImage!.alt}
+                                />
+                            )}
+                            {prevImage && (
+                                <FullImagePreload
+                                    src={prevImage!.src}
+                                    alt={'prev-' + prevImage!.alt}
+                                />
+                            )}
+                        </motion.div>
+                    </>
+                ) : (
+                    <div>Image not found</div>
+                )}
+                {showArrow && (
+                    <div
+                        ref={arrow}
+                        className="arrow-svg absolute z-10 top-20 left-0 w-14 h-14 bg-no-repeat opacity-0"
+                        style={{
+                            backgroundSize: '60%',
+                        }}
+                    />
+                )}
+            </Modal>
+        </WindowSizeProvider>
     );
 }

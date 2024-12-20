@@ -2,6 +2,7 @@
 
 import { Content } from '@/content/content';
 import { PhotosContext } from '@/features/photo-wall/contexts/photos-provider';
+import { debounce } from '@/features/photo-wall/utils/debouncer';
 import { throttleWithDebounce } from '@/features/photo-wall/utils/throttler-with-debouncer';
 import { isBot } from '@/features/photo-wall/utils/user-agent';
 import { motion, MotionGlobalConfig } from 'motion/react';
@@ -15,6 +16,7 @@ export const ThumbnailWall = () => {
 
     // a state variable to check if the component is rendered on the client side
     const [mounted, setMounted] = useState(false);
+
     const [isIntroCompleted, setIsIntroCompleted] = useState(false);
     const [touchMoveEnabled, setTouchMoveEnabled] = useState(false);
     const [isEffectEnabled, setIsEffectEnabled] = useState(true);
@@ -32,16 +34,6 @@ export const ThumbnailWall = () => {
         `wall-${new Date().getTime()}-${Math.round(Math.random() * 1000)}`
     );
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            // turn off animations for the bots
-            if (isBot(navigator.userAgent)) {
-                MotionGlobalConfig.skipAnimations = true;
-            }
-            setMounted(true);
-        }
-    }, []);
-
     const getContainerRect = useCallback(() => {
         const container = document.querySelector(
             '#' + containerId
@@ -57,10 +49,11 @@ export const ThumbnailWall = () => {
             height: gridRect.height,
         };
     }, [containerId]);
+
+    // main effect function: process items on the grid
     const processItems = useCallback(
         (pointX: number, pointY: number) => {
             if (!isEffectEnabled) return;
-
             const maxDistance = getContainerRect().width;
             document
                 .querySelectorAll(`#${containerId} .item`)
@@ -111,8 +104,22 @@ export const ThumbnailWall = () => {
             maxScale,
         ]
     );
+    // throttle the processItems function to use it in the event handlers
     const processItemsThrottled = throttleWithDebounce(
         processItems as (...args: (number | string | object)[]) => void,
+        100
+    );
+
+    // reset items to their original positions
+    const resetItems = useCallback(() => {
+        document.querySelectorAll(`#${containerId} .item`)?.forEach((item) => {
+            const img = item.parentElement;
+            if (img != null) img.style.transform = 'none';
+        });
+    }, [containerId]);
+    // debounce the resetItems function to override the throttleWithDebounce effect
+    const resetItemsDebounced = debounce(
+        resetItems as (...args: (number | string | object)[]) => void,
         100
     );
 
@@ -173,12 +180,28 @@ export const ThumbnailWall = () => {
         ]
     );
 
+    // handler four mouunt/unmount:
+    // check if the component is rendered on the client side
     useEffect(() => {
-        window.addEventListener('mousemove', moveEventHandler);
-        window.addEventListener('touchmove', moveEventHandler);
-        window.addEventListener('touchstart', onTouchStart);
-        window.addEventListener('touchend', onTouchEnd);
-        window.addEventListener('deviceorientation', onDeviceOrientation);
+        if (typeof window !== 'undefined') {
+            // turn off animations for the bots
+            if (isBot(navigator.userAgent)) {
+                MotionGlobalConfig.skipAnimations = true;
+            }
+            setMounted(true);
+        }
+    }, []);
+
+    // handler for EVERY render
+    useEffect(() => {
+        // add event listeners only if the effect is enabled
+        if (isEffectEnabled) {
+            window.addEventListener('mousemove', moveEventHandler);
+            window.addEventListener('touchmove', moveEventHandler);
+            window.addEventListener('touchstart', onTouchStart);
+            window.addEventListener('touchend', onTouchEnd);
+            window.addEventListener('deviceorientation', onDeviceOrientation);
+        }
         return () => {
             window.removeEventListener('mousemove', moveEventHandler);
             window.removeEventListener('touchmove', moveEventHandler);
@@ -190,6 +213,12 @@ export const ThumbnailWall = () => {
             window.removeEventListener('touchend', onTouchEnd);
         };
     });
+
+    // handlers for isEffectEnabled state update
+    // reset items when the effect is disabled
+    useEffect(() => {
+        if (!isEffectEnabled) resetItemsDebounced();
+    }, [isEffectEnabled, resetItemsDebounced]);
 
     return !mounted ? (
         <div className="flex justify-center items-center text-center min-h-20">
@@ -249,7 +278,7 @@ export const ThumbnailWall = () => {
                             setIsIntroCompleted(index == photos.length - 1)
                         }
                     >
-                        <Link href={photo.url} className="item">
+                        <Link href={photo.url} className="item" scroll={false}>
                             <Image
                                 className={`object-cover`}
                                 src={photo.src}
