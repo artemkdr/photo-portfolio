@@ -12,7 +12,8 @@ export default function FullImagePreload({ src, alt }: FullImageProps) {
                 src={src}
                 alt={alt}
                 width={0.9 * windowSize.width}
-                height={0.9 * windowSize.height}
+                height={0}
+                className="h-auto"
                 loading="eager"
                 hidden={true}
                 priority={false}

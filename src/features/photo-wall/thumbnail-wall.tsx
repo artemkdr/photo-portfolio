@@ -10,7 +10,14 @@ import { motion, MotionGlobalConfig } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import {
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 
 export const ThumbnailWall = () => {
     const photos = useContext(PhotosContext);
@@ -31,14 +38,10 @@ export const ThumbnailWall = () => {
     const minScale = 0.9;
     const angleMultiplier = 2;
 
-    const [containerId] = useState(
-        `wall-${new Date().getTime()}-${Math.round(Math.random() * 1000)}`
-    );
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const getContainerRect = useCallback(() => {
-        const container = document.querySelector(
-            '#' + containerId
-        ) as HTMLElement;
+        const container = containerRef.current;
         const gridRect = container?.getBoundingClientRect() ?? {
             left: 0,
             top: 0,
@@ -49,54 +52,51 @@ export const ThumbnailWall = () => {
             width: gridRect.width,
             height: gridRect.height,
         };
-    }, [containerId]);
+    }, [containerRef]);
 
     // main effect function: process items on the grid
     const processItems = useCallback(
         (pointX: number, pointY: number) => {
             if (!isEffectEnabled) return;
             const maxDistance = getContainerRect().width;
-            document
-                .querySelectorAll(`#${containerId} .item`)
-                ?.forEach((item) => {
-                    const itemRect = item.getBoundingClientRect();
-                    const itemCenterX = itemRect.left + itemRect.width / 2;
-                    const itemCenterY = itemRect.top + itemRect.height / 2;
+            containerRef.current?.querySelectorAll(`.item`)?.forEach((item) => {
+                const itemRect = item.getBoundingClientRect();
+                const itemCenterX = itemRect.left + itemRect.width / 2;
+                const itemCenterY = itemRect.top + itemRect.height / 2;
 
-                    const distanceX = itemCenterX - pointX;
-                    const distanceY = itemCenterY - pointY;
-                    const distance = Math.sqrt(distanceX ** 2 + distanceY ** 2);
-                    const scaleFactor = Math.max(
-                        0,
-                        1 - (scaleMultiplier * distance) / maxDistance
-                    );
-                    const scale =
-                        minScale + (maxScale - minScale) * scaleFactor;
+                const distanceX = itemCenterX - pointX;
+                const distanceY = itemCenterY - pointY;
+                const distance = Math.sqrt(distanceX ** 2 + distanceY ** 2);
+                const scaleFactor = Math.max(
+                    0,
+                    1 - (scaleMultiplier * distance) / maxDistance
+                );
+                const scale = minScale + (maxScale - minScale) * scaleFactor;
 
-                    const distanceFactor =
-                        Math.max(0, 1 - (distance / maxDistance) ** 2) *
-                        distanceMultiplier;
+                const distanceFactor =
+                    Math.max(0, 1 - (distance / maxDistance) ** 2) *
+                    distanceMultiplier;
 
-                    const rotateYAngle =
-                        (angleMultiplier * distanceX) / maxDistance;
-                    const rotateXAngle =
-                        (-angleMultiplier * distanceY) / maxDistance;
+                const rotateYAngle =
+                    (angleMultiplier * distanceX) / maxDistance;
+                const rotateXAngle =
+                    (-angleMultiplier * distanceY) / maxDistance;
 
-                    const img = item.parentElement;
-                    if (img != null) {
-                        img.style.transition = 'transform 0.5s ease-out';
-                        img.style.transform = `scale(${scale}) \
+                const img = item.parentElement;
+                if (img != null) {
+                    img.style.transition = 'transform 0.5s ease-out';
+                    img.style.transform = `scale(${scale}) \
                     translate(${distanceX * distanceFactor}px, ${distanceY * distanceFactor}px) \
                     rotateX(${rotateXAngle}deg) rotateY(${rotateYAngle}deg)`;
-                        img.style.zIndex = Math.round(
-                            maxDistance - distance
-                        ).toString();
-                    }
-                });
+                    img.style.zIndex = Math.round(
+                        maxDistance - distance
+                    ).toString();
+                }
+            });
         },
         [
             isEffectEnabled,
-            containerId,
+            containerRef,
             getContainerRect,
             scaleMultiplier,
             distanceMultiplier,
@@ -113,11 +113,11 @@ export const ThumbnailWall = () => {
 
     // reset items to their original positions
     const resetItems = useCallback(() => {
-        document.querySelectorAll(`#${containerId} .item`)?.forEach((item) => {
+        containerRef.current?.querySelectorAll(`.item`)?.forEach((item) => {
             const img = item.parentElement;
             if (img != null) img.style.transform = 'none';
         });
-    }, [containerId]);
+    }, [containerRef]);
     // debounce the resetItems function to override the throttleWithDebounce effect
     const resetItemsDebounced = debounce(
         resetItems as (...args: (number | string | object)[]) => void,
@@ -221,6 +221,53 @@ export const ThumbnailWall = () => {
         if (!isEffectEnabled) resetItemsDebounced();
     }, [isEffectEnabled, resetItemsDebounced]);
 
+    // create a grid of photos and memoize it
+    const photosGrid = useMemo(() => {
+        return photos?.map((photo, index) => (
+            <motion.div
+                key={`${photo.name}-${index}`}
+                initial={{
+                    opacity: 0,
+                    x: -500 + Math.random() * 500,
+                    y: -200 + Math.random() * 400,
+                    rotateY: -20 + Math.random() * 40,
+                    rotateZ: -10 + Math.random() * 20,
+                    scaleX: 2,
+                    scaleY: 2,
+                }}
+                animate={{
+                    opacity: 1,
+                    x: 0,
+                    y: 0,
+                    rotateY: 0,
+                    rotateZ: 0,
+                    scaleX: 1,
+                    scaleY: 1,
+                }}
+                transition={{
+                    duration: 0.5,
+                    delay: 0.1 + index * 0.01,
+                    type: 'spring',
+                }}
+                onAnimationComplete={() =>
+                    index == photos.length - 1 && setIsIntroCompleted(true)
+                }
+            >
+                <Link href={photo.url} className="item" scroll={false}>
+                    <Image
+                        className={`object-cover`}
+                        src={photo.src}
+                        alt={photo.alt}
+                        width={tileWidth * maxScale}
+                        height={tileHeight * maxScale}
+                        style={{ width: tileWidth, height: tileHeight }}
+                        quality={50}
+                    />
+                </Link>
+            </motion.div>
+        ));
+    }, [photos, tileWidth, tileHeight, maxScale]);
+
     return !mounted ? (
         <Loader />
     ) : (
@@ -243,53 +290,11 @@ export const ThumbnailWall = () => {
                 )}
             </button>
             <div
-                id={containerId}
+                ref={containerRef}
                 className="flex flex-wrap clear-both"
                 style={{ perspective: '50px' }}
             >
-                {photos?.map((photo, index) => (
-                    <motion.div
-                        key={`${photo.name}-${index}`}
-                        initial={{
-                            opacity: 0,
-                            x: -500 + Math.random() * 500,
-                            y: -200 + Math.random() * 400,
-                            rotateY: -20 + Math.random() * 40,
-                            rotateZ: -10 + Math.random() * 20,
-                            scaleX: 2,
-                            scaleY: 2,
-                        }}
-                        animate={{
-                            opacity: 1,
-                            x: 0,
-                            y: 0,
-                            rotateY: 0,
-                            rotateZ: 0,
-                            scaleX: 1,
-                            scaleY: 1,
-                        }}
-                        transition={{
-                            duration: 0.5,
-                            delay: 0.1 + index * 0.01,
-                            type: 'spring',
-                        }}
-                        onAnimationComplete={() =>
-                            setIsIntroCompleted(index == photos.length - 1)
-                        }
-                    >
-                        <Link href={photo.url} className="item" scroll={false}>
-                            <Image
-                                className={`object-cover`}
-                                src={photo.src}
-                                alt={photo.alt}
-                                width={tileWidth * maxScale}
-                                height={tileHeight * maxScale}
-                                style={{ width: tileWidth, height: tileHeight }}
-                                quality={50}
-                            />
-                        </Link>
-                    </motion.div>
-                ))}
+                {photosGrid}
             </div>
         </>
     );
