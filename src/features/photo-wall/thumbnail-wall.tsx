@@ -37,6 +37,7 @@ export const ThumbnailWall = () => {
     const maxScale = 1.5;
     const minScale = 0.9;
     const angleMultiplier = 2;
+    const currentPath = '/';
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -126,7 +127,7 @@ export const ThumbnailWall = () => {
 
     const moveEventHandler = useCallback(
         (e: MouseEvent | TouchEvent) => {
-            if (isIntroCompleted && pathname === '/') {
+            if (isIntroCompleted && pathname === currentPath) {
                 processItemsThrottled(
                     e instanceof MouseEvent
                         ? e.clientX
@@ -141,15 +142,26 @@ export const ThumbnailWall = () => {
                 );
             }
         },
-        [processItemsThrottled, isIntroCompleted, pathname]
+        [processItemsThrottled, isIntroCompleted, pathname, currentPath]
     );
 
     const onTouchStart = useCallback(
         (e: TouchEvent) => {
-            setTouchMoveEnabled(true);
-            processItemsThrottled(e.touches[0].clientX, e.touches[0].clientY);
+            if (isIntroCompleted && pathname === currentPath) {
+                setTouchMoveEnabled(true);
+                processItemsThrottled(
+                    e.touches[0].clientX,
+                    e.touches[0].clientY
+                );
+            }
         },
-        [processItemsThrottled, setTouchMoveEnabled]
+        [
+            processItemsThrottled,
+            setTouchMoveEnabled,
+            isIntroCompleted,
+            pathname,
+            currentPath,
+        ]
     );
 
     const onTouchEnd = useCallback(() => {
