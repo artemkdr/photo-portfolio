@@ -8,6 +8,7 @@ import { PhotosContext } from '@/features/photo-wall/contexts/photos-provider';
 import { WindowSizeProvider } from '@/features/photo-wall/contexts/window-size-provider';
 import { Photo } from '@/features/photo-wall/types/photo';
 import { getAbsolutePosition } from '@/features/photo-wall/utils/position';
+import { throttleWithDebounce } from '@/features/photo-wall/utils/throttler-with-debouncer';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import {
@@ -77,6 +78,7 @@ export default function ModalImage({
                 e.target instanceof HTMLElement &&
                 (e.target.classList.contains('modal-overlay') ||
                     e.target.classList.contains('full-image') ||
+                    e.target.classList.contains('arrow-svg') ||
                     e.target.classList.contains('modal-wrapper'))
             ) {
                 const clientX =
@@ -95,6 +97,35 @@ export default function ModalImage({
         [openNextImage, openPrevImage]
     );
 
+    const processCursor = useCallback(
+        (x: number, y: number) => {
+            if (arrow.current != null && arrow.current.parentElement != null) {
+                const p = getAbsolutePosition(arrow.current.parentElement);
+                const rect = arrow.current.getBoundingClientRect();
+                if (x > window.innerWidth / 2) {
+                    arrow.current.style.transform = 'rotateY(0deg)';
+                    arrow.current.style.top =
+                        y - p.y - 0.2 * rect.height + 'px';
+                    arrow.current.style.left = x - p.x - rect.width + 'px';
+                } else {
+                    arrow.current.style.transform = 'rotateY(180deg)';
+                    arrow.current.style.top =
+                        y - p.y - 0.2 * rect.height + 'px';
+                    arrow.current.style.left = x - p.x + 'px';
+                }
+                arrow.current.style.opacity = '1';
+                arrow.current.style.transition =
+                    'top 0.2s ease-out, left 0.2s ease-out, transform 0.5s ease-out, opacity 1s ease-out';
+            }
+        },
+        [arrow]
+    );
+
+    const processCursorThrottled = throttleWithDebounce(
+        processCursor as (...args: (number | string | object)[]) => void,
+        100
+    );
+
     // handle mousemove event to show an arrow indicating that we can go to next/prev image
     const onMouseMove = useCallback(
         (e: MouseEvent) => {
@@ -107,25 +138,7 @@ export default function ModalImage({
                 setShowArrow(false);
                 return;
             }
-            if (arrow.current != null && arrow.current.parentElement != null) {
-                const p = getAbsolutePosition(arrow.current.parentElement);
-                const rect = arrow.current.getBoundingClientRect();
-                if (e.clientX > window.innerWidth / 2) {
-                    arrow.current.style.transform = 'rotateY(0deg)';
-                    arrow.current.style.top =
-                        e.clientY - p.y - 0.2 * rect.height + 'px';
-                    arrow.current.style.left =
-                        e.clientX - p.x - rect.width + 'px';
-                } else {
-                    arrow.current.style.transform = 'rotateY(180deg)';
-                    arrow.current.style.top =
-                        e.clientY - p.y - 0.2 * rect.height + 'px';
-                    arrow.current.style.left = e.clientX - p.x + 'px';
-                }
-                arrow.current.style.opacity = '1';
-                arrow.current.style.transition =
-                    'top 0.1s ease-out, left 0.1s ease-out, transform 0.5s ease-out, opacity 1s ease-out';
-            }
+            processCursorThrottled(e.clientX, e.clientY);
             setShowArrow(true);
         },
         [setShowArrow, arrow]
@@ -145,7 +158,6 @@ export default function ModalImage({
         setPrevImage(index > 0 ? images[index - 1] : null);
     }, [id, images]);
 
-    // handler for EVERY render
     useEffect(() => {
         window.addEventListener('keydown', onKeyDown);
         window.addEventListener('mousemove', onMouseMove);
