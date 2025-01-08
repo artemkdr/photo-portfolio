@@ -6,6 +6,7 @@ import { fetchPhotos } from '@/features/photo-wall/data/data';
 import ThemeButton from '@/features/theme-switcher/components/theme-button';
 import ThemeProvider from '@/features/theme-switcher/contexts/theme-provider';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
 import { Roboto_Condensed } from 'next/font/google';
 import './globals.css';
@@ -41,6 +42,7 @@ export default async function RootLayout({
                             {children}
                             {modal}
                             <Analytics />
+                            <SpeedInsights />
                         </DirectionProvider>
                     </PhotosProvider>
                 </ThemeProvider>
