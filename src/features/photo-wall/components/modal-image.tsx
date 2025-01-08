@@ -141,7 +141,7 @@ export default function ModalImage({
             processCursorThrottled(e.clientX, e.clientY);
             setShowArrow(true);
         },
-        [setShowArrow, arrow]
+        [setShowArrow, processCursorThrottled]
     );
 
     // handler four mouunt/unmount:

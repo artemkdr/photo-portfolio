@@ -21,6 +21,10 @@ export const metadata: Metadata = {
     description: Content.Common.Description,
 };
 
+// revalidate every 24 hours
+// this will re-fetch the photos from the data source
+export const revalidate = 24 * 3600;
+
 export default async function RootLayout({
     children,
     modal,

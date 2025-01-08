@@ -17,6 +17,7 @@ export default function Loader() {
                     alt="loading"
                     width={400}
                     height={10}
+                    unoptimized
                 />
             </motion.div>
         </div>
