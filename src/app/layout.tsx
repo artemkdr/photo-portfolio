@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 // revalidate every 24 hours
 // this will re-fetch the photos from the data source
-export const revalidate = 24 * 3600;
+export const revalidate = 86400;
 
 export default async function RootLayout({
     children,
