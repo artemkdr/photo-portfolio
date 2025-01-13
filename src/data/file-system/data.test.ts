@@ -1,4 +1,4 @@
-import { fetchPhotosFromFS } from '@/features/photo-wall/data/file-system/data';
+import { fetchPhotosFromFS } from '@/data/file-system/data';
 import fs, { PathLike, Stats } from 'fs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -7,7 +7,20 @@ vi.mock('fs');
 describe('fetchPhotosFromFS', () => {
     const mockFiles = ['photo1.jpg', 'photo2.png', 'document.txt'];
     const mockStats = { ctime: new Date() } as Stats;
-    vi.mocked(fs.readdirSync).mockReturnValue(mockFiles);
+
+    vi.mocked<
+        (
+            path: PathLike,
+            options?:
+                | {
+                      encoding: BufferEncoding | null;
+                      withFileTypes?: false | undefined;
+                      recursive?: boolean | undefined;
+                  }
+                | BufferEncoding
+                | null
+        ) => string[]
+    >(fs.readdirSync).mockReturnValue(mockFiles);
     vi.mocked(fs.statSync).mockReturnValue(mockStats);
 
     it('should fetch photos with valid extensions', async () => {

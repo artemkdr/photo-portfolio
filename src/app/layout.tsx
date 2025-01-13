@@ -1,8 +1,8 @@
 import { appConfig } from '@/app.config';
 import { Content } from '@/content/content';
+import { fetchPhotos } from '@/data/data';
 import DirectionProvider from '@/features/photo-wall/contexts/direction-provider';
 import PhotosProvider from '@/features/photo-wall/contexts/photos-provider';
-import { fetchPhotos } from '@/features/photo-wall/data/data';
 import ThemeButton from '@/features/theme-switcher/components/theme-button';
 import ThemeProvider from '@/features/theme-switcher/contexts/theme-provider';
 import { Analytics } from '@vercel/analytics/react';

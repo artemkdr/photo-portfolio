@@ -1,9 +1,9 @@
 'use server';
 
 import { appConfig } from '@/app.config';
-import { fetchPhotosFromBlob } from '@/features/photo-wall/data/blob-storage/data';
-import { fetchDummyPhotos } from '@/features/photo-wall/data/dummy/data';
-import { fetchPhotosFromFS } from '@/features/photo-wall/data/file-system/data';
+import { fetchPhotosFromBlob } from '@/data/blob-storage/data';
+import { fetchDummyPhotos } from '@/data/dummy/data';
+import { fetchPhotosFromFS } from '@/data/file-system/data';
 import { Photo } from '@/features/photo-wall/types/photo';
 
 export async function fetchPhotos(

@@ -1,6 +1,5 @@
 'use client';
 
-import { Content } from '@/content/content';
 import Loader from '@/features/photo-wall/components/loader';
 import { PhotosContext } from '@/features/photo-wall/contexts/photos-provider';
 import { debounce } from '@/features/photo-wall/utils/debouncer';
@@ -19,7 +18,41 @@ import {
     useState,
 } from 'react';
 
-export const ThumbnailWall = () => {
+interface ThumbnailWallProps {
+    turnEffectLabel?: string;
+    tileWidth?: number;
+    tileHeight?: number;
+    distanceMultiplier?: number;
+    scaleMultiplier?: number;
+    maxScale?: number;
+    minScale?: number;
+    angleMultiplier?: number;
+}
+
+/**
+ * ThumbnailWall component
+ *
+ * @param {string} [turnEffectLabel="Turn {state} the effect"] - the label for the button to turn the effect on/off
+ * @param {number} [tileWidth=50] - the width of the thumbnail tile
+ * @param {number} [tileHeight=50] - the height of the thumbnail tile
+ * @param {number} [distanceMultiplier=0.1] - the distance multiplier for the effect, adjust the distance of the effect
+ * @param {number} [scaleMultiplier=4] - the scale multiplier for the effect, adjust the scale of the effect
+ * @param {number} [maxScale=1.5] - the maximum scale of the tile for the effect
+ * @param {number} [minScale=0.9] - the minimum scale of the tile for the effect
+ * @param {number} [angleMultiplier=2] - the angle multiplier for the effect
+ *
+ * @returns
+ */
+export const ThumbnailWall = ({
+    turnEffectLabel = 'Turn {state} the effect',
+    tileWidth = 50,
+    tileHeight = 50,
+    distanceMultiplier = 0.1,
+    scaleMultiplier = 4,
+    maxScale = 1.5,
+    minScale = 0.9,
+    angleMultiplier = 2,
+}: ThumbnailWallProps) => {
     const photos = useContext(PhotosContext);
 
     // a state variable to check if the component is rendered on the client side
@@ -30,13 +63,6 @@ export const ThumbnailWall = () => {
     const [isEffectEnabled, setIsEffectEnabled] = useState(true);
 
     const pathname = usePathname();
-    const tileWidth = 50;
-    const tileHeight = 50;
-    const distanceMultiplier = 0.1;
-    const scaleMultiplier = 4;
-    const maxScale = 1.5;
-    const minScale = 0.9;
-    const angleMultiplier = 2;
     const currentPath = '/';
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -289,14 +315,14 @@ export const ThumbnailWall = () => {
                 style={{
                     transition: 'width 0.5s ease-out',
                 }}
-                aria-label={Content.Gallery.TurnEffect.replace(
+                aria-label={turnEffectLabel.replace(
                     '{state}',
                     isEffectEnabled ? 'off' : 'on'
                 )}
                 aria-pressed={isEffectEnabled}
                 onClick={() => setIsEffectEnabled(!isEffectEnabled)}
             >
-                {Content.Gallery.TurnEffect.replace(
+                {turnEffectLabel.replace(
                     '{state}',
                     isEffectEnabled ? 'off' : 'on'
                 )}

@@ -20,7 +20,9 @@ export default async function Home() {
                     ))}
                 </div>
                 <div className="mt-4 mb-4">
-                    <ThumbnailWall />
+                    <ThumbnailWall
+                        turnEffectLabel={Content.Gallery.TurnEffect}
+                    />
                 </div>
                 <footer className="flex flex-col text-center gap-2">
                     <div className="flex flex-row justify-center gap-4">

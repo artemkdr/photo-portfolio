@@ -1,4 +1,4 @@
-import { fetchPhotosFromBlob } from '@/features/photo-wall/data/blob-storage/data';
+import { fetchPhotosFromBlob } from '@/data/blob-storage/data';
 import { list, ListBlobResult } from '@vercel/blob';
 import { describe, expect, it, vi } from 'vitest';
 

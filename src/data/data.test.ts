@@ -1,11 +1,11 @@
-import * as dataBlob from '@/features/photo-wall/data/blob-storage/data';
-import { fetchPhotos } from '@/features/photo-wall/data/data';
-import * as dataDummy from '@/features/photo-wall/data/dummy/data';
-import * as dataFS from '@/features/photo-wall/data/file-system/data';
+import * as dataBlob from '@/data/blob-storage/data';
+import { fetchPhotos } from '@/data/data';
+import * as dataDummy from '@/data/dummy/data';
+import * as dataFS from '@/data/file-system/data';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/features/photo-wall/data/blob-storage/data');
-vi.mock('@/features/photo-wall/data/file-system/data');
+vi.mock('@/data/blob-storage/data');
+vi.mock('@/data/file-system/data');
 
 describe('fetchPhotos', () => {
     it("should call fetchPhotosFromBlob when source is 'blob'", async () => {

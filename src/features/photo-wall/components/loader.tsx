@@ -15,6 +15,7 @@ export default function Loader() {
                 <Image
                     src="/loading.gif"
                     alt="loading"
+                    aria-busy="true"
                     width={400}
                     height={10}
                     unoptimized
