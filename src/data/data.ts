@@ -29,7 +29,7 @@ export async function fetchPhotos(
             }
             photos.push({
                 src: photo.src,
-                url: `/${appConfig.photosPath}/${encodeURIComponent(photo.name)}`,
+                url: `/${appConfig.photosPath}/${photo.name}`,
                 alt: photo.alt,
                 name: photo.name,
             });
