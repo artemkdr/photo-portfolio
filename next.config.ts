@@ -11,6 +11,11 @@ if (appConfig.blobDomain !== undefined) {
                 hostname: appConfig.blobDomain,
                 pathname: `/${appConfig.photosDir}/**`,
             },
+            {
+                protocol: 'https',
+                hostname: 'lh3.googleusercontent.com',
+                pathname: `/**`,
+            },
         ],
     };
 }

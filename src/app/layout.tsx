@@ -34,7 +34,8 @@ export default async function RootLayout({
 }>) {
     const photos = await fetchPhotos(
         appConfig.dataSource,
-        appConfig.photosLimit
+        appConfig.photosLimit,
+        appConfig.googlePhotos
     );
     return (
         <html lang="en">
