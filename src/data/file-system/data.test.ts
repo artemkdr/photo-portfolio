@@ -1,6 +1,6 @@
 import { fetchPhotosFromFS } from '@/data/file-system/data';
-import fs, { PathLike, Stats } from 'fs';
-import { describe, expect, it, vi } from 'vitest';
+import fs, { Dirent, Stats } from 'fs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('fs');
 
@@ -8,20 +8,12 @@ describe('fetchPhotosFromFS', () => {
     const mockFiles = ['photo1.jpg', 'photo2.png', 'document.txt'];
     const mockStats = { ctime: new Date() } as Stats;
 
-    vi.mocked<
-        (
-            path: PathLike,
-            options?:
-                | {
-                      encoding: BufferEncoding | null;
-                      withFileTypes?: false | undefined;
-                      recursive?: boolean | undefined;
-                  }
-                | BufferEncoding
-                | null
-        ) => string[]
-    >(fs.readdirSync).mockReturnValue(mockFiles);
-    vi.mocked(fs.statSync).mockReturnValue(mockStats);
+    beforeEach(() => {
+        vi.spyOn(fs, 'readdirSync').mockReturnValue(
+            mockFiles as unknown as Dirent<Buffer<ArrayBuffer>>[]
+        );
+        vi.spyOn(fs, 'statSync').mockReturnValue(mockStats);
+    });
 
     it('should fetch photos with valid extensions', async () => {
         const photos = await fetchPhotosFromFS();
@@ -51,7 +43,7 @@ describe('fetchPhotosFromFS', () => {
     });
 
     it('should sort photos by creation time', async () => {
-        vi.mocked(fs.statSync).mockImplementation((path: PathLike) => {
+        vi.mocked(fs.statSync).mockImplementation((path) => {
             const filePath = path as string;
             if (filePath.endsWith('photo1.jpg'))
                 return { ctime: new Date('2023-01-01') } as Stats;
