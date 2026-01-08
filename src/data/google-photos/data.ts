@@ -148,6 +148,7 @@ async function fetchFromPublicAlbum(publicAlbumUrl: string) {
 function extractPhotosFromHtml(html: string) {
     const photos = [] as {
         src: string;
+        previewSrc?: string;
         name: string;
         alt: string;
         created: Date;
@@ -180,7 +181,8 @@ function extractPhotosFromHtml(html: string) {
                 : lastPart || `photo-${index + 1}.jpg`;
 
             photos.push({
-                src: url.includes('=') ? url : `${url}=w1600-h1200`, // Ensure high quality
+                src: url.includes('=') ? url : `${url}=w1200-h1200`, // Ensure high quality
+                previewSrc: url.includes('=') ? url : `${url}=w100-h100`, // Preview size
                 name: encodeURIComponent(filename),
                 alt: filename,
                 created: new Date(), // We can't get creation time from public albums reliably
@@ -215,6 +217,7 @@ export async function fetchPhotosFromGooglePhotos(config: GooglePhotosConfig) {
 
     let photos: Array<{
         src: string;
+        previewSrc?: string;
         name: string;
         alt: string;
         created: Date;

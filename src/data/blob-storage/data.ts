@@ -19,6 +19,7 @@ export async function fetchPhotosFromBlob(photosDir: string = 'photos') {
         ) {
             photos.push({
                 src: blob.url,
+                previewSrc: blob.url,
                 name: encodeURIComponent(decodeURIComponent(filename)), // decode / encode to rely on the local encoding and not on the blob storage encoding
                 alt: filename,
                 created: blob.uploadedAt,

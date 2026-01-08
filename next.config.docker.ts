@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
 
 if (appConfig.blobDomain !== undefined) {
     nextConfig.images = {
+        unoptimized: true,
         domains: [appConfig.blobDomain],
     };
 }

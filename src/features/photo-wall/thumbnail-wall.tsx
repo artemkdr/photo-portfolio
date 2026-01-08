@@ -294,7 +294,7 @@ export const ThumbnailWall = ({
                 <Link href={photo.url} className="item" scroll={false}>
                     <Image
                         className={`object-cover`}
-                        src={photo.src}
+                        src={photo.previewSrc || photo.src}
                         alt={photo.alt}
                         width={tileWidth * maxScale}
                         height={tileHeight * maxScale}

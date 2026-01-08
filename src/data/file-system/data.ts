@@ -24,6 +24,7 @@ export async function fetchPhotosFromFS(photosDir: string = 'photos') {
             const stats = fs.statSync(filePath); // Get file stats
             return {
                 src: `/${photosDir}/${encodeURIComponent(filename)}`,
+                previewSrc: `/${photosDir}/${encodeURIComponent(filename)}`,
                 name: encodeURIComponent(filename),
                 alt: filename,
                 created: stats.ctime,
