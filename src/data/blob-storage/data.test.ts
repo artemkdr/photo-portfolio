@@ -43,12 +43,14 @@ describe('fetchPhotosFromBlob', () => {
         expect(photos).toHaveLength(4);
         expect(photos[0]).toEqual({
             src: '/photos/photo2.png',
+            previewSrc: '/photos/photo2.png',
             name: 'photo2.png',
             alt: 'photo2.png',
             created: blobs[1].uploadedAt,
         });
         expect(photos[1]).toEqual({
             src: '/photos/photo1.webp',
+            previewSrc: '/photos/photo1.webp',
             name: 'photo1.webp',
             alt: 'photo1.webp',
             created: blobs[0].uploadedAt,

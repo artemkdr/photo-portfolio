@@ -28,12 +28,14 @@ describe('fetchPhotosFromFS', () => {
         expect(photos).toHaveLength(2);
         expect(photos[0]).toEqual({
             src: '/photos/photo1.jpg',
+            previewSrc: '/photos/photo1.jpg',
             name: 'photo1.jpg',
             alt: 'photo1.jpg',
             created: mockStats.ctime,
         });
         expect(photos[1]).toEqual({
             src: '/photos/photo2.png',
+            previewSrc: '/photos/photo2.png',
             name: 'photo2.png',
             alt: 'photo2.png',
             created: mockStats.ctime,
