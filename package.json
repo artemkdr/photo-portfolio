@@ -14,7 +14,7 @@
         "test:watch": "vitest watch"
     },
     "dependencies": {
-        "@vercel/analytics": "^1.6.1",
+        "@vercel/analytics": "^2.0.1",
         "@vercel/blob": "^2.3.3",
         "@vercel/speed-insights": "^2.0.0",
         "motion": "^12.38.0",
