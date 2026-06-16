@@ -142,7 +142,9 @@ export const ThumbnailWall = ({
                     img.style.transition = 'transform 0.5s ease-out';
                     img.style.transform = `scale(${scale}) \
                     translate(${distanceX * distanceFactor}px, ${distanceY * distanceFactor}px) \
-                    rotateX(${rotateXAngle}deg) rotateY(${rotateYAngle}deg)`;
+                    rotateX(${rotateXAngle}deg) rotateY(${rotateYAngle}deg) \
+                    translateZ(0)`;
+                    img.style.backfaceVisibility = 'hidden';
                     img.style.zIndex = Math.round(
                         maxDistance - distance
                     ).toString();
