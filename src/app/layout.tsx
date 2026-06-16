@@ -3,6 +3,7 @@ import { Content } from '@/content/content';
 import { fetchPhotos } from '@/data/data';
 import DirectionProvider from '@/features/photo-wall/contexts/direction-provider';
 import PhotosProvider from '@/features/photo-wall/contexts/photos-provider';
+import { WindowSizeProvider } from '@/features/photo-wall/contexts/window-size-provider';
 import ThemeButton from '@/features/theme-switcher/components/theme-button';
 import ThemeProvider from '@/features/theme-switcher/contexts/theme-provider';
 import { Analytics } from '@vercel/analytics/react';
@@ -43,9 +44,11 @@ export default async function RootLayout({
                 <ThemeProvider>
                     <PhotosProvider value={photos}>
                         <DirectionProvider>
-                            {<ThemeButton />}
-                            {children}
-                            {modal}
+                            <WindowSizeProvider>
+                                {<ThemeButton />}
+                                {children}
+                                {modal}
+                            </WindowSizeProvider>
                             <Analytics />
                             <SpeedInsights />
                         </DirectionProvider>

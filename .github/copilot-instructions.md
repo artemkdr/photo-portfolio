@@ -25,6 +25,13 @@
 - After completing a task, briefly state: what changed, why, and how it was validated.
 - Call out risks, assumptions, or recommended follow-up items.
 
+### Token Cost Efficiency
+
+- Never paste full logs unless requested.
+- Compact when context grows large (roughly 30k-60k tokens), after 30-40 turns, or immediately after pasting big logs/errors.
+- After 2 failed retries, pause, restate root cause hypotheses, and replan before continuing.
+- Compact prompt template: Compact this chat now and keep only goal, constraints, decisions, changed files, and next steps.
+
 ---
 
 ## Project Overview

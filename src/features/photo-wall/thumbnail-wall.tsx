@@ -2,6 +2,7 @@
 
 import Loader from '@/features/photo-wall/components/loader';
 import { PhotosContext } from '@/features/photo-wall/contexts/photos-provider';
+import { useWindowSize } from '@/features/photo-wall/contexts/window-size-provider';
 import { debounce } from '@/features/photo-wall/utils/debouncer';
 import { throttleWithDebounce } from '@/features/photo-wall/utils/throttler-with-debouncer';
 import { isBot } from '@/features/photo-wall/utils/user-agent';
@@ -45,8 +46,8 @@ interface ThumbnailWallProps {
  */
 export const ThumbnailWall = ({
     turnEffectLabel = 'Turn {state} the effect',
-    tileWidth = 50,
-    tileHeight = 50,
+    tileWidth: tileWidthProp,
+    tileHeight: tileHeightProp,
     distanceMultiplier = 0.1,
     scaleMultiplier = 4,
     maxScale = 1.5,
@@ -54,13 +55,40 @@ export const ThumbnailWall = ({
     angleMultiplier = 2,
 }: ThumbnailWallProps) => {
     const photos = useContext(PhotosContext);
+    const windowSize = useWindowSize();
 
     // a state variable to check if the component is rendered on the client side
     const [mounted, setMounted] = useState(false);
 
+    // Calculate responsive tile sizes based on window width
+    const { tileWidth, tileHeight } = useMemo(() => {
+        if (tileWidthProp !== undefined && tileHeightProp !== undefined) {
+            return { tileWidth: tileWidthProp, tileHeight: tileHeightProp };
+        }
+
+        // Mobile: 4 tiles per row with gaps
+        // Desktop: 50x50px tiles
+        const isMobile = windowSize.width < 768;
+        if (isMobile) {
+            // Account for padding (p-4 = 16px on each side = 32px total)
+            // Account for 3 gaps of 12px each (gap-0 = 0px) = 36px
+            const availableWidth = windowSize.width - 32;
+            const tileSize = Math.max(40, Math.floor(availableWidth / 4));
+            return { tileWidth: tileSize, tileHeight: tileSize };
+        }
+
+        return { tileWidth: 50, tileHeight: 50 };
+    }, [windowSize.width, tileWidthProp, tileHeightProp]);
+
     const [isIntroCompleted, setIsIntroCompleted] = useState(false);
     const [touchMoveEnabled, setTouchMoveEnabled] = useState(false);
     const [isEffectEnabled, setIsEffectEnabled] = useState(true);
+
+    // disable effect on mobile devices by default
+    useEffect(() => {
+        const isMobile = windowSize.width < 768;
+        setIsEffectEnabled(!isMobile);
+    }, [windowSize.width]);
 
     const pathname = usePathname();
     const currentPath = '/';
@@ -311,7 +339,7 @@ export const ThumbnailWall = ({
     ) : (
         <>
             <button
-                className="p-2 pr-4 pl-4 text-xs rounded-md bg-[rgba(0,0,0,0.1)] dark:bg-[rgba(255,255,255,0.1)] float-right clear-both"
+                className="p-2 pr-4 pl-4 mb-4 text-xs rounded-md bg-[rgba(0,0,0,0.1)] dark:bg-[rgba(255,255,255,0.1)] float-right clear-both"
                 style={{
                     transition: 'width 0.5s ease-out',
                 }}
@@ -329,7 +357,7 @@ export const ThumbnailWall = ({
             </button>
             <div
                 ref={containerRef}
-                className="flex flex-wrap clear-both"
+                className={`flex flex-wrap clear-both gap-0 justify-center`}
                 style={{ perspective: '50px' }}
             >
                 {photosGrid}
